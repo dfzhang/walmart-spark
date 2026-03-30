@@ -1,4 +1,4 @@
-import { streamText, stepCountIs } from "ai";
+import { streamText, stepCountIs, convertToModelMessages } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { createMCPClient } from "@ai-sdk/mcp";
 
@@ -43,9 +43,13 @@ export async function POST(req: Request) {
     );
   }
 
-  let mcpClient;
+  let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | undefined;
   try {
     const { messages } = await req.json();
+
+    // useChat sends UIMessage format (parts array), but streamText
+    // expects ModelMessage format (content string). Convert.
+    const modelMessages = await convertToModelMessages(messages);
 
     mcpClient = await createMCPClient({
       transport: {
@@ -62,7 +66,7 @@ export async function POST(req: Request) {
     const result = streamText({
       model: anthropic("claude-sonnet-4-20250514"),
       system: SYSTEM_PROMPT,
-      messages,
+      messages: modelMessages,
       tools,
       stopWhen: stepCountIs(10),
       onFinish: async () => {
