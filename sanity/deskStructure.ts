@@ -46,6 +46,12 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
 
       S.divider(),
 
+      // ── Agent Context (AI chatbot config) ────────────────────
+      S.documentTypeListItem("sanity.agentContext")
+        .title("Agent Context"),
+
+      S.divider(),
+
       // ── Settings (singleton) ─────────────────────────────────
       S.listItem()
         .title("Settings")
@@ -55,6 +61,12 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
             .schemaType("helpCenterSettings")
             .documentId("helpCenterSettings")
         ),
+
+      S.divider(),
+
+      // ── Agent Context ────────────────────────────────────────
+      S.documentTypeListItem("sanity.agentContext")
+        .title("Agent Context"),
     ]);
 
 // Filter out singleton from "new document" options
