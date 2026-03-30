@@ -46,12 +46,6 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
 
       S.divider(),
 
-      // ── Agent Context (AI chatbot config) ────────────────────
-      S.documentTypeListItem("sanity.agentContext")
-        .title("Agent Context"),
-
-      S.divider(),
-
       // ── Settings (singleton) ─────────────────────────────────
       S.listItem()
         .title("Settings")
@@ -64,7 +58,7 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
 
       S.divider(),
 
-      // ── Agent Context ────────────────────────────────────────
+      // ── Agent Context (AI chatbot config) ────────────────────
       S.documentTypeListItem("sanity.agentContext")
         .title("Agent Context"),
     ]);
