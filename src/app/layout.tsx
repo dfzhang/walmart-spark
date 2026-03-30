@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ChatWidget } from "@/components/chat-widget";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({
             © {new Date().getFullYear()} Walmart Inc. All rights reserved.
           </div>
         </footer>
+        <ChatWidget />
       </body>
     </html>
   );
