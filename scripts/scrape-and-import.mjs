@@ -1,6 +1,6 @@
 /**
- * Re-imports article bodies from HelpDocs into Sanity as Portable Text.
- * Patches existing documents (preserves category refs, featured flags, etc.)
+ * Re-imports article bodies from HelpDocs into Sanity as clean Portable Text.
+ * Strips scripts, styles, figures, and other non-content HTML before converting.
  * Usage: node scripts/reimport.mjs
  */
 import { createClient } from "@sanity/client";
@@ -42,14 +42,77 @@ function makeBlock(style, children, extra = {}) {
 }
 
 /**
+ * Clean HTML before parsing: remove scripts, styles, meta, figures, hr, etc.
+ */
+function cleanHTML(html) {
+  return html
+    // Remove entire script blocks (including content)
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    // Remove entire style blocks
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    // Remove meta tags
+    .replace(/<meta[^>]*\/?>/gi, "")
+    // Remove title tags (embedded in some articles)
+    .replace(/<title[\s\S]*?<\/title>/gi, "")
+    // Remove hr tags
+    .replace(/<hr[^>]*\/?>/gi, "")
+    // Remove figure/figcaption (images — we skip these for now)
+    .replace(/<figure[\s\S]*?<\/figure>/gi, "[image]")
+    // Remove standalone img tags
+    .replace(/<img[^>]*\/?>/gi, "[image]")
+    // Remove noscript
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, "")
+    // Remove HTML comments
+    .replace(/<!--[\s\S]*?-->/g, "")
+    // Unwrap span tags (keep content, drop the tag)
+    .replace(/<\/?span[^>]*>/gi, "")
+    // Unwrap sup/sub (keep content)
+    .replace(/<\/?su[bp][^>]*>/gi, "")
+    // Convert details/summary to plain content
+    .replace(/<\/?details[^>]*>/gi, "")
+    .replace(/<\/?summary[^>]*>/gi, "")
+    // Remove data attributes and class attributes from remaining tags
+    .replace(/ (?:class|data-[a-z-]+|style|id|role|aria-[a-z-]+)="[^"]*"/gi, "")
+    // Collapse whitespace
+    .replace(/\n\s*\n\s*\n/g, "\n\n")
+    .trim();
+}
+
+/**
+ * Decode HTML entities
+ */
+function decodeEntities(text) {
+  return text
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n)))
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&rdquo;/g, "\u201D")
+    .replace(/&ldquo;/g, "\u201C")
+    .replace(/&mdash;/g, "\u2014")
+    .replace(/&ndash;/g, "\u2013")
+    .replace(/&hellip;/g, "\u2026")
+    .replace(/&trade;/g, "\u2122")
+    .replace(/&copy;/g, "\u00A9")
+    .replace(/&reg;/g, "\u00AE");
+}
+
+/**
  * Parse inline HTML into spans with marks and markDefs.
- * Handles: <strong>, <b>, <em>, <i>, <a href>, nested combinations.
+ * Only handles: <strong>, <b>, <em>, <i>, <a href>, <u>, <code>, <br>
+ * Everything else should be stripped by cleanHTML first.
  */
 function parseInline(html) {
   const spans = [];
   const markDefs = [];
 
-  // Tokenize into text and tags
+  // Tokenize: split on known inline tags only
   const tokens = html.split(/(<\/?(?:strong|b|em|i|a|u|code|br)[^>]*>)/gi);
   let activeMarks = [];
   let activeLinkKey = null;
@@ -59,21 +122,17 @@ function parseInline(html) {
 
     const tagMatch = token.match(/^<(\/?)(strong|b|em|i|a|u|code|br)([^>]*)>$/i);
     if (!tagMatch) {
-      // Text node — decode HTML entities
-      const text = token
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&nbsp;/g, " ");
-      if (text) {
-        spans.push(makeSpan(text, [...activeMarks]));
+      // Text node
+      const text = decodeEntities(token);
+      // Strip any remaining HTML tags that leaked through
+      const clean = text.replace(/<[^>]+>/g, "");
+      if (clean) {
+        spans.push(makeSpan(clean, [...activeMarks]));
       }
       continue;
     }
 
-    const [, closing, tag] = tagMatch;
+    const [, closing, tag, attrs] = tagMatch;
     const tagLower = tag.toLowerCase();
 
     if (tagLower === "br") {
@@ -82,7 +141,6 @@ function parseInline(html) {
     }
 
     if (closing === "/") {
-      // Closing tag
       if (tagLower === "a") {
         activeMarks = activeMarks.filter((m) => m !== activeLinkKey);
         activeLinkKey = null;
@@ -91,9 +149,8 @@ function parseInline(html) {
         activeMarks = activeMarks.filter((m) => m !== mark);
       }
     } else {
-      // Opening tag
       if (tagLower === "a") {
-        const hrefM = tagMatch[3].match(/href="([^"]*)"/);
+        const hrefM = attrs.match(/href="([^"]*)"/);
         if (hrefM) {
           const linkKey = key();
           markDefs.push({ _type: "link", _key: linkKey, href: hrefM[1] });
@@ -111,8 +168,7 @@ function parseInline(html) {
 }
 
 /**
- * Convert HTML string to Portable Text blocks.
- * Handles: h1-h6, p, ul/ol/li (nested), strong, em, a, br, div.note
+ * Convert cleaned HTML to Portable Text blocks.
  */
 function htmlToPortableText(html) {
   if (!html || !html.trim()) {
@@ -122,183 +178,147 @@ function htmlToPortableText(html) {
   const blocks = [];
   blockKey = 0;
 
-  // Normalize whitespace between tags
-  let cleaned = html
-    .replace(/\r\n/g, "\n")
-    .replace(/>\s+</g, "> <")
-    .trim();
+  // Split by block-level tags
+  const parts = html.split(
+    /(<\/?(?:h[1-6]|p|li|ul|ol|div|blockquote|table|thead|tbody|tr|td|th)[^>]*>)/gi
+  );
 
-  // Split into block-level elements
-  // Match opening and closing block tags, plus everything between
-  const blockRegex = /<(h[1-6]|p|li|div|ul|ol|blockquote|table|tr|td|th)(\s[^>]*)?>|<\/(h[1-6]|p|li|div|ul|ol|blockquote|table|tr|td|th)>/gi;
+  let currentStyle = "normal";
+  let currentContent = "";
+  let inList = false;
+  let listType = "bullet";
+  let listLevel = 0;
+  let divDepth = 0;
+  let skipToc = false;
 
-  let lastIndex = 0;
-  let listStack = []; // track nested ul/ol
-  const segments = [];
+  function flush() {
+    const trimmed = currentContent.trim();
+    currentContent = "";
+    if (!trimmed) return;
 
-  // First pass: extract block-level segments
-  let match;
-  const tagPositions = [];
-  while ((match = blockRegex.exec(cleaned)) !== null) {
-    tagPositions.push({
-      index: match.index,
-      length: match[0].length,
-      tag: (match[1] || match[3]).toLowerCase(),
-      isClosing: match[0].startsWith("</"),
-      attrs: match[2] || "",
-      raw: match[0],
-    });
-  }
+    // Strip any remaining div wrappers
+    const stripped = trimmed.replace(/^<div[^>]*>|<\/div>$/gi, "").trim();
+    if (!stripped) return;
 
-  // Second pass: pair opening/closing tags and extract content
-  function extractBlocks(html) {
-    const result = [];
+    // Final safety: strip any remaining unknown tags from content
+    // but preserve the text between them
+    const safeContent = stripped;
 
-    // Simple state machine approach
-    // Split by block-level tags
-    const parts = html.split(
-      /(<\/?(?:h[1-6]|p|li|ul|ol|div|blockquote|table|thead|tbody|tr|td|th|hr)(?:\s[^>]*)?>)/gi
-    );
+    const { spans, markDefs } = parseInline(safeContent);
 
-    let currentStyle = "normal";
-    let currentContent = "";
-    let inList = false;
-    let listType = "bullet";
-    let listLevel = 0;
-    let skipDiv = 0;
+    // Check if all spans are empty
+    const totalText = spans.reduce((s, sp) => s + (sp.text || ""), "");
+    if (!totalText.trim()) return;
 
-    function flush() {
-      const trimmed = currentContent.trim();
-      if (!trimmed) {
-        currentContent = "";
-        return;
-      }
-
-      // Strip wrapping tags that might have leaked through
-      const stripped = trimmed.replace(/^<div[^>]*>|<\/div>$/gi, "").trim();
-      if (!stripped) {
-        currentContent = "";
-        return;
-      }
-
-      const { spans, markDefs } = parseInline(stripped);
-      const block = makeBlock(currentStyle, spans, {
+    blocks.push(
+      makeBlock(currentStyle, spans, {
         markDefs,
         ...(inList ? { listItem: listType, level: listLevel } : {}),
-      });
-      result.push(block);
-      currentContent = "";
-    }
-
-    for (const part of parts) {
-      if (!part) continue;
-
-      const tagMatch = part.match(
-        /^<(\/?)(h[1-6]|p|li|ul|ol|div|blockquote|table|thead|tbody|tr|td|th|hr)(\s[^>]*)?>$/i
-      );
-
-      if (!tagMatch) {
-        // Content
-        currentContent += part;
-        continue;
-      }
-
-      const [, closing, tag, attrs = ""] = tagMatch;
-      const t = tag.toLowerCase();
-
-      if (t === "hr") {
-        flush();
-        // Skip hr
-        continue;
-      }
-
-      if (closing === "/") {
-        // Closing tag
-        switch (t) {
-          case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
-            flush();
-            currentStyle = "normal";
-            break;
-          case "p":
-            flush();
-            break;
-          case "li":
-            flush();
-            break;
-          case "ul":
-          case "ol":
-            listLevel = Math.max(0, listLevel - 1);
-            if (listLevel === 0) inList = false;
-            break;
-          case "div":
-            if (skipDiv > 0) skipDiv--;
-            flush();
-            break;
-          case "table": case "thead": case "tbody": case "tr": case "td": case "th":
-            // Tables: just flush content as paragraphs
-            flush();
-            break;
-          case "blockquote":
-            flush();
-            currentStyle = "normal";
-            break;
-        }
-      } else {
-        // Opening tag
-        switch (t) {
-          case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
-            flush();
-            currentStyle = t;
-            break;
-          case "p":
-            flush();
-            currentStyle = inList ? "normal" : "normal";
-            break;
-          case "li":
-            flush();
-            currentStyle = "normal";
-            break;
-          case "ul":
-            flush();
-            listLevel++;
-            inList = true;
-            listType = "bullet";
-            break;
-          case "ol":
-            flush();
-            listLevel++;
-            inList = true;
-            listType = "number";
-            break;
-          case "div":
-            flush();
-            // Check for TOC div — skip it
-            if (/id="toc"/i.test(attrs)) {
-              skipDiv++;
-            }
-            break;
-          case "blockquote":
-            flush();
-            currentStyle = "blockquote";
-            break;
-          case "table": case "thead": case "tbody": case "tr": case "td": case "th":
-            flush();
-            break;
-        }
-      }
-    }
-
-    flush();
-    return result;
+      })
+    );
   }
 
-  const result = extractBlocks(cleaned);
+  for (const part of parts) {
+    if (!part) continue;
 
-  // Filter out empty blocks and TOC blocks
-  const filtered = result.filter((b) => {
+    const tagMatch = part.match(
+      /^<(\/?)(h[1-6]|p|li|ul|ol|div|blockquote|table|thead|tbody|tr|td|th)([^>]*)>$/i
+    );
+
+    if (!tagMatch) {
+      if (!skipToc) {
+        currentContent += part;
+      }
+      continue;
+    }
+
+    const [, closing, tag, attrs = ""] = tagMatch;
+    const t = tag.toLowerCase();
+
+    if (closing === "/") {
+      switch (t) {
+        case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
+          flush();
+          currentStyle = "normal";
+          break;
+        case "p":
+          flush();
+          break;
+        case "li":
+          flush();
+          break;
+        case "ul":
+        case "ol":
+          listLevel = Math.max(0, listLevel - 1);
+          if (listLevel === 0) inList = false;
+          break;
+        case "div":
+          divDepth = Math.max(0, divDepth - 1);
+          if (skipToc && divDepth === 0) skipToc = false;
+          flush();
+          break;
+        case "blockquote":
+          flush();
+          currentStyle = "normal";
+          break;
+        case "table": case "thead": case "tbody": case "tr": case "td": case "th":
+          flush();
+          break;
+      }
+    } else {
+      switch (t) {
+        case "h1": case "h2": case "h3": case "h4": case "h5": case "h6":
+          flush();
+          currentStyle = t;
+          break;
+        case "p":
+          flush();
+          break;
+        case "li":
+          flush();
+          break;
+        case "ul":
+          flush();
+          listLevel++;
+          inList = true;
+          listType = "bullet";
+          break;
+        case "ol":
+          flush();
+          listLevel++;
+          inList = true;
+          listType = "number";
+          break;
+        case "div":
+          flush();
+          divDepth++;
+          // Skip TOC divs
+          if (/id="toc"|id="htmlWithToc"/i.test(attrs)) {
+            // Don't skip — the TOC wrapper contains the actual content too
+            // Only skip the inner toc div
+          }
+          if (/\bid="toc"\b/i.test(attrs)) {
+            skipToc = true;
+          }
+          break;
+        case "blockquote":
+          flush();
+          currentStyle = "blockquote";
+          break;
+        case "table": case "thead": case "tbody": case "tr": case "td": case "th":
+          flush();
+          break;
+      }
+    }
+  }
+
+  flush();
+
+  // Filter out [image] placeholder blocks and truly empty blocks
+  const filtered = blocks.filter((b) => {
     if (b._type !== "block") return true;
-    const text = b.children.map((c) => c.text).join("").trim();
-    return text.length > 0;
+    const text = b.children.map((c) => c.text || "").join("").trim();
+    return text.length > 0 && text !== "[image]";
   });
 
   return filtered.length > 0
@@ -311,7 +331,6 @@ function htmlToPortableText(html) {
 console.log("🔍 Fetching homepage...");
 const homepage = await fetchHTML(BASE);
 
-// Extract article links
 const artRegex = /href="(\/l\/en\/article\/([a-z0-9]+)-([^"]+))"/g;
 const seen = new Set();
 const articleLinks = [];
@@ -323,15 +342,13 @@ while ((m = artRegex.exec(homepage)) !== null) {
 }
 console.log(`📄 ${articleLinks.length} articles to update\n`);
 
-let success = 0;
-let failed = 0;
+let success = 0, failed = 0;
 
 for (let i = 0; i < articleLinks.length; i++) {
   const link = articleLinks[i];
   try {
     const html = await fetchHTML(`${BASE}${link.path}`);
 
-    // Extract body HTML
     const cbM = html.match(
       /<div class="card-block">([\s\S]*?)(?:<div class="row">|<\/article>|<footer)/
     );
@@ -346,10 +363,12 @@ for (let i = 0; i < articleLinks.length; i++) {
       .replace(/<p class="card-text meta">[\s\S]*?<\/p>/, "")
       .trim();
 
-    // Convert to Portable Text
+    // CLEAN the HTML before converting
+    bodyHtml = cleanHTML(bodyHtml);
+
     const body = htmlToPortableText(bodyHtml);
 
-    // Validate: ensure all blocks have required fields
+    // Validate blocks
     for (const block of body) {
       if (block._type === "block") {
         if (!block.children || block.children.length === 0) {
@@ -360,11 +379,21 @@ for (let i = 0; i < articleLinks.length; i++) {
       }
     }
 
-    // Patch the existing document (preserve category, featured, etc.)
-    await client
-      .patch(`article-${link.slug}`)
-      .set({ body })
-      .commit();
+    // Verify no HTML tags leaked into span text
+    let leaked = false;
+    for (const block of body) {
+      if (block._type === "block") {
+        for (const child of block.children) {
+          if (child.text && /<[a-z\/][^>]*>/i.test(child.text)) {
+            leaked = true;
+            // Strip them as last resort
+            child.text = child.text.replace(/<[^>]+>/g, "");
+          }
+        }
+      }
+    }
+
+    await client.patch(`article-${link.slug}`).set({ body }).commit();
 
     const blockCount = body.length;
     const textLen = body
@@ -372,7 +401,7 @@ for (let i = 0; i < articleLinks.length; i++) {
       .reduce((sum, b) => sum + b.children.reduce((s, c) => s + (c.text?.length || 0), 0), 0);
 
     console.log(
-      `  ✅ [${i + 1}/${articleLinks.length}] ${link.slug} — ${blockCount} blocks, ${textLen} chars`
+      `  ✅ [${i + 1}/${articleLinks.length}] ${link.slug} — ${blockCount} blocks, ${textLen} chars${leaked ? " (stripped leaked tags)" : ""}`
     );
     success++;
 
