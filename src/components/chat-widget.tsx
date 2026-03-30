@@ -1,9 +1,17 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import type { UIMessage } from "ai";
 import { useState, useRef, useEffect } from "react";
 
-function parseArticleLinks(text: string) {
+function getMessageText(message: UIMessage): string {
+  return message.parts
+    .filter((p): p is { type: "text"; text: string } => p.type === "text")
+    .map((p) => p.text)
+    .join("");
+}
+
+function parseArticleLinks(text: string): string {
   // Convert [Article Title](slug:article-slug) to clickable links
   return text.replace(
     /\[([^\]]+)\]\(slug:([^)]+)\)/g,
@@ -11,9 +19,12 @@ function parseArticleLinks(text: string) {
   );
 }
 
-function ChatMessage({ role, content }: { role: string; content: string }) {
-  const isUser = role === "user";
-  const html = parseArticleLinks(content);
+function ChatMessage({ message }: { message: UIMessage }) {
+  const isUser = message.role === "user";
+  const text = getMessageText(message);
+  if (!text) return null;
+
+  const html = isUser ? text : parseArticleLinks(text);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-3`}>
@@ -25,7 +36,7 @@ function ChatMessage({ role, content }: { role: string; content: string }) {
         }`}
       >
         {isUser ? (
-          <p>{content}</p>
+          <p>{text}</p>
         ) : (
           <div
             className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-2 prose-a:text-[#0071DC]"
@@ -39,13 +50,13 @@ function ChatMessage({ role, content }: { role: string; content: string }) {
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
-    useChat({
-      api: "/api/chat",
-    });
+  const { messages, sendMessage, status, error } = useChat();
+
+  const isLoading = status === "submitted" || status === "streaming";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,6 +67,14 @@ export function ChatWidget() {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = input.trim();
+    if (!trimmed || isLoading) return;
+    sendMessage({ text: trimmed });
+    setInput("");
+  };
 
   return (
     <>
@@ -102,13 +121,9 @@ export function ChatWidget() {
               </div>
             )}
             {messages.map((m) => (
-              <ChatMessage
-                key={m.id}
-                role={m.role}
-                content={typeof m.content === "string" ? m.content : ""}
-              />
+              <ChatMessage key={m.id} message={m} />
             ))}
-            {isLoading && (
+            {isLoading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex justify-start mb-3">
                 <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
                   <div className="flex gap-1.5">
@@ -135,7 +150,7 @@ export function ChatWidget() {
             <input
               ref={inputRef}
               value={input}
-              onChange={handleInputChange}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question..."
               className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:border-transparent"
               disabled={isLoading}

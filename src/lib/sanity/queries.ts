@@ -57,7 +57,7 @@ export async function getFeaturedArticles() {
 }
 
 export async function searchArticles(query: string) {
-  return client.fetch(searchArticlesQuery, { query });
+  return client.fetch(searchArticlesQuery, { query } as Record<string, string>);
 }
 
 export async function getHelpCenterSettings() {
