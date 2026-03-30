@@ -5,8 +5,9 @@ import { createMCPClient } from "@ai-sdk/mcp";
 const SANITY_PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "o01w1nx2";
 const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 const SANITY_API_TOKEN = process.env.SANITY_API_TOKEN!;
+const AGENT_CONTEXT_SLUG = process.env.SANITY_AGENT_CONTEXT_SLUG || "";
 
-const AGENT_CONTEXT_URL = `https://api.sanity.io/v2024-01-01/agent-context/${SANITY_PROJECT_ID}/${SANITY_DATASET}`;
+const AGENT_CONTEXT_URL = `https://api.sanity.io/v2024-01-01/agent-context/${SANITY_PROJECT_ID}/${SANITY_DATASET}${AGENT_CONTEXT_SLUG ? `/${AGENT_CONTEXT_SLUG}` : ""}`;
 
 const SYSTEM_PROMPT = `You are the Spark Driver™ Help Center assistant. You help Spark delivery drivers find answers to their questions about the Spark Driver app, earnings, deliveries, shopping orders, returns, troubleshooting, and account management.
 
