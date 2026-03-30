@@ -29,30 +29,55 @@ GROQ TIPS:
 - Use pt::text(body) to extract plain text from Portable Text fields for matching`;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  if (!SANITY_API_TOKEN) {
+    return new Response(
+      JSON.stringify({ error: "SANITY_API_TOKEN is not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
-  const mcpClient = await createMCPClient({
-    transport: {
-      type: "http",
-      url: AGENT_CONTEXT_URL,
-      headers: {
-        Authorization: `Bearer ${SANITY_API_TOKEN}`,
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: "ANTHROPIC_API_KEY is not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  let mcpClient;
+  try {
+    const { messages } = await req.json();
+
+    mcpClient = await createMCPClient({
+      transport: {
+        type: "http",
+        url: AGENT_CONTEXT_URL,
+        headers: {
+          Authorization: `Bearer ${SANITY_API_TOKEN}`,
+        },
       },
-    },
-  });
+    });
 
-  const tools = await mcpClient.tools();
+    const tools = await mcpClient.tools();
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system: SYSTEM_PROMPT,
-    messages,
-    tools,
-    stopWhen: stepCountIs(10),
-    onFinish: async () => {
-      await mcpClient.close();
-    },
-  });
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system: SYSTEM_PROMPT,
+      messages,
+      tools,
+      stopWhen: stepCountIs(10),
+      onFinish: async () => {
+        await mcpClient?.close();
+      },
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    await mcpClient?.close();
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[chat] Error:", message);
+    return new Response(
+      JSON.stringify({ error: message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 }
