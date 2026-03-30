@@ -1,0 +1,9 @@
+node_modules/
+.pnpm-store/
+.next/
+out/
+.env*.local
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+scripts/scraped-content.json
