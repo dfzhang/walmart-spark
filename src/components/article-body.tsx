@@ -26,11 +26,27 @@ const components = {
     ),
   },
   marks: {
-    link: ({ children, value }: { children: React.ReactNode; value?: { href: string } }) => (
-      <a href={value?.href} className="text-[#0071DC] underline hover:text-[#004F9A]" target="_blank" rel="noopener noreferrer">
+    link: ({ children, value }: { children: React.ReactNode; value?: { href: string; openInNewTab?: boolean } }) => (
+      <a
+        href={value?.href}
+        className="text-[#0071DC] underline hover:text-[#004F9A]"
+        target={value?.openInNewTab !== false ? "_blank" : undefined}
+        rel={value?.openInNewTab !== false ? "noopener noreferrer" : undefined}
+      >
         {children}
       </a>
     ),
+    internalLink: ({ children, value }: { children: React.ReactNode; value?: { reference?: { _ref: string } } }) => {
+      // Reference _ref follows pattern "article-{slug}" — extract the slug for the URL
+      const ref = value?.reference?._ref || "";
+      const slug = ref.replace(/^article-/, "");
+      if (!slug) return <>{children}</>;
+      return (
+        <a href={`/article/${slug}`} className="text-[#0071DC] underline hover:text-[#004F9A]">
+          {children}
+        </a>
+      );
+    },
   },
 };
 
