@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getCategoryBySlug, getAllCategories } from "@/lib/sanity";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import type { ArticleSummary } from "@/lib/types";
+import type { ArticleSummary, SeoFields } from "@/lib/types";
 
 export const revalidate = 60;
 
@@ -11,6 +12,7 @@ interface CategoryWithArticles {
   slug: { current: string };
   description?: string;
   articles: ArticleSummary[];
+  seo?: SeoFields;
 }
 
 export async function generateStaticParams() {
@@ -18,6 +20,31 @@ export async function generateStaticParams() {
   return categories.map((c: { slug: { current: string } }) => ({
     slug: c.slug.current,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const category = (await getCategoryBySlug(slug)) as CategoryWithArticles | null;
+  if (!category) return {};
+
+  const title = category.seo?.metaTitle || category.title;
+  const description =
+    category.seo?.metaDescription ||
+    category.description ||
+    `Browse ${category.title} help articles`;
+
+  return {
+    title: `${title} | Spark Driver™ Help Center`,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
 }
 
 export default async function CategoryPage({

@@ -11,6 +11,12 @@ export interface SanityImage {
   alt?: string;
 }
 
+export interface SeoFields {
+  metaTitle?: string;
+  metaDescription?: string;
+  ogImage?: SanityImage;
+}
+
 export interface Category {
   _id: string;
   title: string;
@@ -18,6 +24,7 @@ export interface Category {
   description?: string;
   icon?: string;
   articleCount: number;
+  seo?: SeoFields;
 }
 
 export interface ArticleSummary {
@@ -32,6 +39,7 @@ export interface Article extends ArticleSummary {
   body: PortableTextBlock[];
   category?: { _id: string; title: string; slug: SanitySlug };
   relatedArticles?: ArticleSummary[];
+  seo?: SeoFields;
 }
 
 export interface HelpCenterSettings {

@@ -7,7 +7,7 @@ export const allCategoriesQuery = `*[_type == "category"] | order(orderRank asc)
 }`;
 
 export const categoryBySlugQuery = `*[_type == "category" && slug.current == $slug][0] {
-  _id, title, slug, description, icon,
+  _id, title, slug, description, icon, seo,
   "articles": *[_type == "article" && references(^._id)] | order(orderRank asc) {
     _id, title, slug, excerpt, _updatedAt
   }
@@ -15,7 +15,7 @@ export const categoryBySlugQuery = `*[_type == "category" && slug.current == $sl
 
 // Article queries
 export const articleBySlugQuery = `*[_type == "article" && slug.current == $slug][0] {
-  _id, title, slug, body, excerpt, _updatedAt,
+  _id, title, slug, body, excerpt, _updatedAt, seo,
   "category": category->{_id, title, slug},
   "relatedArticles": relatedArticles[]->{_id, title, slug, excerpt}
 }`;
