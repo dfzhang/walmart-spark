@@ -66,8 +66,9 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const article = (await getArticleBySlug(slug)) as Article | null;
+  const { slug, locale: localeParam } = await params;
+  const metaLocale = localeParam === "es" ? "es" as const : "en" as const;
+  const article = (await getArticleBySlug(slug, metaLocale)) as Article | null;
   if (!article) return {};
 
   const title = article.seo?.metaTitle || article.title;
@@ -100,7 +101,7 @@ export default async function ArticlePage({
   const locale = (isValidLocale(localeParam) ? localeParam : "en") as Locale;
   const dict = getDictionary(locale);
 
-  const article = (await getArticleBySlug(slug)) as Article | null;
+  const article = (await getArticleBySlug(slug, locale)) as Article | null;
   if (!article) notFound();
 
   const dateLocale = locale === "es" ? "es-ES" : "en-US";

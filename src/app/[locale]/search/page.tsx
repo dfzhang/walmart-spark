@@ -37,7 +37,7 @@ export default async function SearchPage({
   const { q } = await searchParams;
   const query = q?.trim() || "";
   const results = query
-    ? ((await searchArticles(query)) as SearchResult[])
+    ? ((await searchArticles(query, locale)) as SearchResult[])
     : [];
 
   const plural = results.length !== 1 ? "s" : "";

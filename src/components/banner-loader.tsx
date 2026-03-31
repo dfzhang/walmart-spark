@@ -7,7 +7,7 @@ import type { Locale } from "@/lib/i18n/config";
  * and renders the client-side NotificationBanner if one exists.
  */
 export async function BannerLoader({ locale = "en" }: { locale?: Locale }) {
-  const banner = await getActiveBanner();
+  const banner = await getActiveBanner(locale);
   if (!banner) return null;
 
   return (

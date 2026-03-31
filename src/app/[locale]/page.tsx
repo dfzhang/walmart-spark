@@ -32,9 +32,9 @@ export default async function HomePage({
   const dict = getDictionary(locale);
 
   const [categories, featured, settings] = await Promise.all([
-    getAllCategories() as Promise<Category[]>,
-    getFeaturedArticles() as Promise<(ArticleSummary & { category?: { title: string; slug: { current: string } } })[]>,
-    getHelpCenterSettings() as Promise<HelpCenterSettings | null>,
+    getAllCategories(locale) as Promise<Category[]>,
+    getFeaturedArticles(locale) as Promise<(ArticleSummary & { category?: { title: string; slug: { current: string } } })[]>,
+    getHelpCenterSettings(locale) as Promise<HelpCenterSettings | null>,
   ]);
 
   return (

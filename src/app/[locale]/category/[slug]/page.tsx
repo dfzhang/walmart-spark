@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCategoryBySlug, getAllCategories } from "@/lib/sanity";
+import { getCategoryBySlug, getAllCategorySlugs } from "@/lib/sanity";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -19,10 +19,8 @@ interface CategoryWithArticles {
 }
 
 export async function generateStaticParams() {
-  const categories = await getAllCategories();
-  return categories.map((c: { slug: { current: string } }) => ({
-    slug: c.slug.current,
-  }));
+  const categories = await getAllCategorySlugs();
+  return categories.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({
@@ -30,8 +28,9 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const category = (await getCategoryBySlug(slug)) as CategoryWithArticles | null;
+  const { slug, locale: localeParam } = await params;
+  const metaLocale = localeParam === "es" ? "es" as const : "en" as const;
+  const category = (await getCategoryBySlug(slug, metaLocale)) as CategoryWithArticles | null;
   if (!category) return {};
 
   const title = category.seo?.metaTitle || category.title;
@@ -62,7 +61,7 @@ export default async function CategoryPage({
   const locale = (isValidLocale(localeParam) ? localeParam : "en") as Locale;
   const dict = getDictionary(locale);
 
-  const category = (await getCategoryBySlug(slug)) as CategoryWithArticles | null;
+  const category = (await getCategoryBySlug(slug, locale)) as CategoryWithArticles | null;
   if (!category) notFound();
 
   return (
