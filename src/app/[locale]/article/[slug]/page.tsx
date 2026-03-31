@@ -6,6 +6,8 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ArticleBody } from "@/components/article-body";
 import { RelatedArticles } from "@/components/related-articles";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { TableOfContents } from "@/components/table-of-contents";
+import { extractHeadings } from "@/lib/headings";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { PortableTextBlock } from "@portabletext/types";
@@ -116,34 +118,59 @@ export default async function ArticlePage({
 
   const faqSections = extractFaqSections(article.body);
   const faqJsonLd = buildFaqJsonLd(faqSections, article.title);
+  const headings = extractHeadings(article.body);
+  const hasToc = headings.length >= 2;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <Breadcrumbs items={breadcrumbs} />
 
-      <article className="mt-6">
-        <h1 className="text-2xl font-bold mb-2">{article.title}</h1>
-        {article._updatedAt && (
-          <p className="text-sm text-gray-400 mb-6">
-            {dict.article.lastUpdated.replace(
-              "{date}",
-              new Date(article._updatedAt).toLocaleDateString(dateLocale, {
-                year: "numeric", month: "long", day: "numeric",
-              })
-            )}
-          </p>
-        )}
-
-        <div className="prose prose-blue max-w-none">
-          <ArticleBody body={article.body} locale={locale} />
+      {/* Mobile TOC — shown above article on small screens */}
+      {hasToc && (
+        <div className="mt-6 lg:hidden">
+          <TableOfContents
+            headings={headings}
+            label={dict.article.tableOfContents}
+          />
         </div>
-      </article>
-
-      <FeedbackWidget articleId={article._id} locale={locale} />
-
-      {article.relatedArticles && article.relatedArticles.length > 0 && (
-        <RelatedArticles articles={article.relatedArticles} locale={locale} />
       )}
+
+      <div className={hasToc ? "lg:grid lg:grid-cols-[1fr_220px] lg:gap-8 mt-6" : "mt-6"}>
+        {/* Article content — main column */}
+        <div className="min-w-0">
+          <article>
+            <h1 className="text-2xl font-bold mb-2">{article.title}</h1>
+            {article._updatedAt && (
+              <p className="text-sm text-gray-400 mb-6">
+                {dict.article.lastUpdated.replace(
+                  "{date}",
+                  new Date(article._updatedAt).toLocaleDateString(dateLocale, {
+                    year: "numeric", month: "long", day: "numeric",
+                  })
+                )}
+              </p>
+            )}
+
+            <div className="prose prose-blue max-w-none">
+              <ArticleBody body={article.body} locale={locale} />
+            </div>
+          </article>
+
+          <FeedbackWidget articleId={article._id} locale={locale} />
+
+          {article.relatedArticles && article.relatedArticles.length > 0 && (
+            <RelatedArticles articles={article.relatedArticles} locale={locale} />
+          )}
+        </div>
+
+        {/* Desktop TOC — sticky sidebar */}
+        {hasToc && (
+          <TableOfContents
+            headings={headings}
+            label={dict.article.tableOfContents}
+          />
+        )}
+      </div>
 
       {faqJsonLd && (
         <script

@@ -1,11 +1,13 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import { FaqAccordion } from "./faq-accordion";
 import { urlForImage } from "@/lib/sanity";
+import { slugify } from "@/lib/slugify";
 import type { Locale } from "@/lib/i18n/config";
 
 const LANGUAGE_LABELS: Record<string, string> = {
@@ -19,12 +21,32 @@ const LANGUAGE_LABELS: Record<string, string> = {
   text: "Plain Text",
 };
 
-function buildComponents(locale: Locale) {
+const HEADING_STYLES: Record<string, string> = {
+  h2: "text-xl font-bold mt-8 mb-3",
+  h3: "text-lg font-semibold mt-6 mb-2",
+  h4: "text-base font-semibold mt-4 mb-2",
+};
+
+function buildComponents(locale: Locale, slugCounterRef: React.RefObject<Map<string, number>>) {
   function articlePath(slug: string): string {
     return locale === "en" ? `/article/${slug}` : `/${locale}/article/${slug}`;
   }
 
   return {
+    block: {
+      h2: ({ children, value }: { children?: React.ReactNode; value: PortableTextBlock }) => {
+        const id = getHeadingId(value, slugCounterRef);
+        return <h2 id={id} className={HEADING_STYLES.h2}>{children}</h2>;
+      },
+      h3: ({ children, value }: { children?: React.ReactNode; value: PortableTextBlock }) => {
+        const id = getHeadingId(value, slugCounterRef);
+        return <h3 id={id} className={HEADING_STYLES.h3}>{children}</h3>;
+      },
+      h4: ({ children, value }: { children?: React.ReactNode; value: PortableTextBlock }) => {
+        const id = getHeadingId(value, slugCounterRef);
+        return <h4 id={id} className={HEADING_STYLES.h4}>{children}</h4>;
+      },
+    },
     types: {
       callout: ({ value }: { value: { style: string; content: PortableTextBlock[] } }) => {
         const styles: Record<string, string> = {
@@ -105,6 +127,29 @@ function buildComponents(locale: Locale) {
   };
 }
 
+/**
+ * Extract plain text from a block and generate a slug ID.
+ * Tracks seen slugs via ref to handle duplicates consistently
+ * with the server-side extractHeadings() function.
+ */
+function getHeadingId(
+  block: PortableTextBlock,
+  counterRef: React.RefObject<Map<string, number>>
+): string {
+  const children = (block as { children?: { text?: string }[] }).children;
+  const text = children ? children.map((c) => c.text ?? "").join("") : "";
+  let id = slugify(text);
+
+  const seen = counterRef.current;
+  const count = seen.get(id) ?? 0;
+  seen.set(id, count + 1);
+  if (count > 0) {
+    id = `${id}-${count}`;
+  }
+
+  return id;
+}
+
 export function ArticleBody({
   body,
   locale = "en",
@@ -112,6 +157,13 @@ export function ArticleBody({
   body: PortableTextBlock[];
   locale?: Locale;
 }) {
+  // Track duplicate heading slugs across the render — must match
+  // the server-side extractHeadings() duplicate counter logic.
+  const slugCounterRef = useRef(new Map<string, number>());
+
+  // Reset on each render so re-renders produce consistent IDs
+  slugCounterRef.current.clear();
+
   if (!body) return null;
-  return <PortableText value={body} components={buildComponents(locale)} />;
+  return <PortableText value={body} components={buildComponents(locale, slugCounterRef)} />;
 }
