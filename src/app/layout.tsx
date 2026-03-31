@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ChatWidget } from "@/components/chat-widget";
 import { MobileNav } from "@/components/mobile-nav";
 import "./globals.css";
@@ -31,24 +32,24 @@ export default function RootLayout({
 
         <header className="bg-spark-blue text-white">
           <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-            <a
+            <Link
               href="/"
               className="flex items-center gap-2 font-bold text-xl"
             >
               <span className="text-spark-yellow">⚡</span> Spark Driver™ Help
               Center
-            </a>
+            </Link>
 
             {/* Desktop nav */}
             <nav aria-label="Main navigation" className="hidden sm:flex gap-4 text-sm">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.href}
                   href={link.href}
                   className="hover:text-spark-yellow transition-colors focus:outline-none focus:ring-2 focus:ring-spark-yellow focus:ring-offset-2 focus:ring-offset-spark-blue rounded px-1"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
 
