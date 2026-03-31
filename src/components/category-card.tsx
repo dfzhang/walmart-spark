@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Category } from "@/lib/types";
 
 const iconMap: Record<string, string> = {
@@ -17,9 +18,9 @@ export function CategoryCard({ category }: { category: Category }) {
   const icon = category.icon || iconMap[category.title] || "📄";
 
   return (
-    <a
+    <Link
       href={`/category/${category.slug.current}`}
-      className="bg-white rounded-lg border border-gray-200 p-5 hover:border-[#0071DC] hover:shadow-md transition-all group"
+      className="bg-white rounded-lg border border-gray-200 p-5 hover:border-[#0071DC] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-offset-2"
     >
       <div className="text-2xl mb-2">{icon}</div>
       <h3 className="font-semibold group-hover:text-[#0071DC] transition-colors">
@@ -28,6 +29,6 @@ export function CategoryCard({ category }: { category: Category }) {
       <p className="text-sm text-gray-500 mt-1">
         {category.articleCount} article{category.articleCount !== 1 ? "s" : ""}
       </p>
-    </a>
+    </Link>
   );
 }
