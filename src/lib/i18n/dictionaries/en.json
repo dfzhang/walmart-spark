@@ -27,6 +27,7 @@
   "article": {
     "lastUpdated": "Last updated: {date}",
     "relatedArticles": "Related Articles",
+    "tableOfContents": "On this page",
     "feedback": {
       "question": "Was this article helpful?",
       "yes": "Yes",
