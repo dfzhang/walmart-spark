@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import { searchArticles } from "@/lib/sanity";
 import { SearchBar } from "@/components/search-bar";
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Search | Spark Driver™ Help Center",
+  description: "Search the Spark Driver Help Center for answers to your questions.",
+};
 
 interface SearchResult {
   _id: string;
@@ -35,10 +42,10 @@ export default async function SearchPage({
 
       <div className="space-y-3 mt-4">
         {results.map((r) => (
-          <a
+          <Link
             key={r._id}
             href={`/article/${r.slug.current}`}
-            className="block bg-white rounded-lg border border-gray-200 p-4 hover:border-spark-blue hover:shadow-sm transition-all"
+            className="block bg-white rounded-lg border border-gray-200 p-4 hover:border-spark-blue hover:shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2 rounded-lg"
           >
             <h3 className="font-medium text-spark-blue">{r.title}</h3>
             {r.category && (
@@ -47,7 +54,7 @@ export default async function SearchPage({
             {r.excerpt && (
               <p className="text-sm text-gray-500 mt-1 line-clamp-2">{r.excerpt}</p>
             )}
-          </a>
+          </Link>
         ))}
       </div>
 

@@ -9,7 +9,6 @@ export async function POST(request: Request) {
     }
 
     // TODO: Wire up to email service, Slack webhook, or database
-    console.log("Contact form submission:", { name, email, subject, message });
 
     return NextResponse.json({ success: true });
   } catch {

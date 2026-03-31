@@ -8,4 +8,6 @@ export {
   getFeaturedArticles,
   searchArticles,
   getHelpCenterSettings,
+  getAllArticleSlugs,
+  getAllCategorySlugs,
 } from "./queries";

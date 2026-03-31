@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import { FaqAccordion } from "./faq-accordion";
@@ -96,9 +97,9 @@ const components = {
       const slug = ref.replace(/^article-/, "");
       if (!slug) return <>{children}</>;
       return (
-        <a href={`/article/${slug}`} className="text-spark-blue underline hover:text-spark-blue-dark">
+        <Link href={`/article/${slug}`} className="text-spark-blue underline hover:text-spark-blue-dark">
           {children}
-        </a>
+        </Link>
       );
     },
   },

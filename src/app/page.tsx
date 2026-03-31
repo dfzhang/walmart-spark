@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getAllCategories, getFeaturedArticles, getHelpCenterSettings } from "@/lib/sanity";
 import type { Category, ArticleSummary, HelpCenterSettings } from "@/lib/types";
 import { SearchBar } from "@/components/search-bar";
@@ -5,6 +6,16 @@ import { CategoryCard } from "@/components/category-card";
 import { FeaturedArticles } from "@/components/featured-articles";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Spark Driver™ Help Center — Find Answers to Your Questions",
+  description:
+    "Get help with your Spark Driver account, earnings, deliveries, and more. Browse articles or search for answers.",
+  openGraph: {
+    title: "Spark Driver™ Help Center",
+    description: "Get help with your Spark Driver account, earnings, deliveries, and more.",
+  },
+};
 
 export default async function HomePage() {
   const [categories, featured, settings] = await Promise.all([

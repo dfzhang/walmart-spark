@@ -8,7 +8,6 @@ export function FeedbackWidget({ articleId }: { articleId: string }) {
   function handleFeedback(value: "yes" | "no") {
     setFeedback(value);
     // TODO: Send to analytics
-    console.log("Feedback:", { articleId, helpful: value });
   }
 
   if (feedback) {

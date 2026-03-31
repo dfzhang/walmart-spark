@@ -34,6 +34,15 @@ export const searchArticlesQuery = `*[_type == "article" && (
   "category": category->{title, slug}
 }`;
 
+// Sitemap queries
+export const allArticleSlugsQuery = `*[_type == "article"] | order(_updatedAt desc) {
+  "slug": slug.current, _updatedAt
+}`;
+
+export const allCategorySlugsQuery = `*[_type == "category"] | order(_updatedAt desc) {
+  "slug": slug.current, _updatedAt
+}`;
+
 // Settings
 export const helpCenterSettingsQuery = `*[_type == "helpCenterSettings"][0] {
   title, description, heroTitle, heroSubtitle
@@ -62,4 +71,16 @@ export async function searchArticles(query: string) {
 
 export async function getHelpCenterSettings() {
   return client.fetch(helpCenterSettingsQuery);
+}
+
+export async function getAllArticleSlugs() {
+  return client.fetch(allArticleSlugsQuery) as Promise<
+    { slug: string; _updatedAt: string }[]
+  >;
+}
+
+export async function getAllCategorySlugs() {
+  return client.fetch(allCategorySlugsQuery) as Promise<
+    { slug: string; _updatedAt: string }[]
+  >;
 }
