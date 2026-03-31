@@ -1,3 +1,4 @@
+import { banner } from "./banner";
 import { category } from "./category";
 import { article } from "./article";
 import { helpCenterSettings } from "./helpCenterSettings";
@@ -8,6 +9,7 @@ import { codeBlock } from "./objects/codeBlock";
 
 export const schemaTypes = [
   // Document types
+  banner,
   category,
   article,
   helpCenterSettings,

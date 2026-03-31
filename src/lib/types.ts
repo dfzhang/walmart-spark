@@ -42,6 +42,12 @@ export interface Article extends ArticleSummary {
   seo?: SeoFields;
 }
 
+export interface Banner {
+  _id: string;
+  message: string;
+  severity: "announcement" | "warning" | "critical";
+}
+
 export interface HelpCenterSettings {
   title?: string;
   description?: string;

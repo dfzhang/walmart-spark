@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BannerLoader } from "@/components/banner-loader";
 import { ChatWidget } from "@/components/chat-widget";
 import { MobileNav } from "@/components/mobile-nav";
 import "./globals.css";
@@ -29,6 +30,9 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+
+        {/* Notification banner — fetched from Sanity, dismissible */}
+        <BannerLoader />
 
         <header className="bg-spark-blue text-white">
           <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
