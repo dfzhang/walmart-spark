@@ -3,9 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCategoryBySlug, getAllCategories } from "@/lib/sanity";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { isValidLocale, type Locale } from "@/lib/i18n/config";
+import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { localePath } from "@/lib/i18n/config";
 import type { ArticleSummary, SeoFields } from "@/lib/types";
 
 export const revalidate = 60;
@@ -47,6 +46,9 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
+    },
+    alternates: {
+      languages: buildHreflangAlternates(`/category/${slug}`),
     },
   };
 }

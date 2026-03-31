@@ -4,9 +4,8 @@ import type { Category, ArticleSummary, HelpCenterSettings } from "@/lib/types";
 import { SearchBar } from "@/components/search-bar";
 import { CategoryCard } from "@/components/category-card";
 import { FeaturedArticles } from "@/components/featured-articles";
-import { isValidLocale, type Locale } from "@/lib/i18n/config";
+import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { localePath } from "@/lib/i18n/config";
 
 export const revalidate = 60;
 
@@ -17,6 +16,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Spark Driver™ Help Center",
     description: "Get help with your Spark Driver account, earnings, deliveries, and more.",
+  },
+  alternates: {
+    languages: buildHreflangAlternates("/"),
   },
 };
 

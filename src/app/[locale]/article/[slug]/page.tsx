@@ -6,9 +6,8 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ArticleBody } from "@/components/article-body";
 import { RelatedArticles } from "@/components/related-articles";
 import { FeedbackWidget } from "@/components/feedback-widget";
-import { isValidLocale, type Locale } from "@/lib/i18n/config";
+import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { localePath } from "@/lib/i18n/config";
 import type { PortableTextBlock } from "@portabletext/types";
 
 export const revalidate = 60;
@@ -85,6 +84,9 @@ export async function generateMetadata({
       description,
       type: "article",
       modifiedTime: article._updatedAt,
+    },
+    alternates: {
+      languages: buildHreflangAlternates(`/article/${slug}`),
     },
   };
 }

@@ -5,7 +5,7 @@ import { BannerLoader } from "@/components/banner-loader";
 import { ChatWidget } from "@/components/chat-widget";
 import { MobileNav } from "@/components/mobile-nav";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { isValidLocale, localePath, type Locale } from "@/lib/i18n/config";
+import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
 export const metadata: Metadata = {
