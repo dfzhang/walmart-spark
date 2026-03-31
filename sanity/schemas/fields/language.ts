@@ -9,4 +9,5 @@ export const languageField = defineField({
   type: "string",
   readOnly: true,
   hidden: true,
+  initialValue: "en",
 });
