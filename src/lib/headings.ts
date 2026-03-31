@@ -5,6 +5,8 @@ export interface TocHeading {
   id: string;
   text: string;
   level: 2 | 3 | 4;
+  /** Portable Text block _key — used to map server IDs to client blocks */
+  _key: string;
 }
 
 /**
@@ -45,6 +47,19 @@ export function extractHeadings(body: PortableTextBlock[]): TocHeading[] {
       }
 
       const level = parseInt(style.charAt(1), 10) as 2 | 3 | 4;
-      return { id, text, level };
+      return { id, text, level, _key: block._key ?? "" };
     });
+}
+
+/**
+ * Build a Map from Portable Text block _key → heading ID.
+ * Pass this to ArticleBody so the client uses server-computed IDs
+ * instead of recomputing (avoids hydration mismatch on duplicates).
+ */
+export function buildHeadingIdMap(headings: TocHeading[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const h of headings) {
+    map.set(h._key, h.id);
+  }
+  return map;
 }

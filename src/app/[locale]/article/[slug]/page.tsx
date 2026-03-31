@@ -7,7 +7,7 @@ import { ArticleBody } from "@/components/article-body";
 import { RelatedArticles } from "@/components/related-articles";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { TableOfContents } from "@/components/table-of-contents";
-import { extractHeadings } from "@/lib/headings";
+import { extractHeadings, buildHeadingIdMap } from "@/lib/headings";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { PortableTextBlock } from "@portabletext/types";
@@ -119,6 +119,7 @@ export default async function ArticlePage({
   const faqSections = extractFaqSections(article.body);
   const faqJsonLd = buildFaqJsonLd(faqSections, article.title);
   const headings = extractHeadings(article.body);
+  const headingIdMap = Object.fromEntries(buildHeadingIdMap(headings));
   const hasToc = headings.length >= 2;
 
   return (
@@ -152,7 +153,7 @@ export default async function ArticlePage({
             )}
 
             <div className="prose prose-blue max-w-none">
-              <ArticleBody body={article.body} locale={locale} />
+              <ArticleBody body={article.body} locale={locale} headingIds={headingIdMap} />
             </div>
           </article>
 
