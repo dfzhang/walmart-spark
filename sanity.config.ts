@@ -2,6 +2,7 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { agentContextPlugin } from "@sanity/agent-context/studio";
 import { documentInternationalization } from "@sanity/document-internationalization";
+import { assist } from "@sanity/assist";
 import { schemaTypes } from "./sanity/schemas";
 import { structure, newDocumentOptions } from "./sanity/deskStructure";
 
@@ -28,6 +29,14 @@ export default defineConfig({
     documentInternationalization({
       supportedLanguages: i18n.languages,
       schemaTypes: i18n.schemaTypes,
+    }),
+    assist({
+      translate: {
+        document: {
+          languageField: "language",
+          documentTypes: [...i18n.schemaTypes],
+        },
+      },
     }),
     agentContextPlugin(),
   ],
