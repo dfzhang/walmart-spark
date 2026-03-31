@@ -4,6 +4,7 @@ import {
   orderRankOrdering,
 } from "@sanity/orderable-document-list";
 import { languageField } from "./fields/language";
+import { isUniquePerLanguage } from "./fields/isUniquePerLanguage";
 
 export const article = defineType({
   name: "article",
@@ -30,7 +31,7 @@ export const article = defineType({
       type: "slug",
       title: "Slug",
       group: "content",
-      options: { source: "title", maxLength: 96 },
+      options: { source: "title", maxLength: 96, isUnique: isUniquePerLanguage },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
