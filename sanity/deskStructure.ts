@@ -57,6 +57,17 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
 
       S.divider(),
 
+      // ── Notification Banners ────────────────────────────────
+      S.listItem()
+        .title("Notification Banners")
+        .icon(() => "🔔")
+        .child(
+          S.documentTypeList("banner")
+            .title("Notification Banners")
+        ),
+
+      S.divider(),
+
       // ── Settings (singleton) ─────────────────────────────────
       S.listItem()
         .title("Settings")
