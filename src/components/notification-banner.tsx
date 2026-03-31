@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import type { Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 type Severity = "announcement" | "warning" | "critical";
 
 interface NotificationBannerProps {
   message: string;
   severity: Severity;
+  locale?: Locale;
 }
 
 const SEVERITY_STYLES: Record<Severity, string> = {
@@ -24,7 +27,8 @@ const DISMISS_STYLES: Record<Severity, string> = {
     "text-white/80 hover:text-white focus:ring-white",
 };
 
-export function NotificationBanner({ message, severity }: NotificationBannerProps) {
+export function NotificationBanner({ message, severity, locale = "en" }: NotificationBannerProps) {
+  const dict = getDictionary(locale);
   const [dismissed, setDismissed] = useState(false);
 
   if (dismissed) return null;
@@ -45,7 +49,7 @@ export function NotificationBanner({ message, severity }: NotificationBannerProp
       </div>
       <button
         onClick={() => setDismissed(true)}
-        aria-label="Dismiss notification"
+        aria-label={dict.banner.dismiss}
         className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${DISMISS_STYLES[severity]}`}
       >
         <svg

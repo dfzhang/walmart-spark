@@ -1,36 +1,55 @@
 import { client } from "./client";
+import type { Locale } from "@/lib/i18n/config";
 
-// Banner query — single active banner, most recently updated wins
-export const activeBannerQuery = `*[_type == "banner" && isActive == true] | order(_updatedAt desc) [0] {
+/**
+ * Language filter for GROQ queries.
+ * Matches documents with the given language, OR documents with no language
+ * set (legacy English content created before i18n was enabled).
+ */
+function langFilter(locale: Locale): string {
+  return `(language == "${locale}" || (!defined(language) && "${locale}" == "en"))`;
+}
+
+// ── Banner ────────────────────────────────────────────────────
+
+export const activeBannerQuery = (locale: Locale) =>
+  `*[_type == "banner" && isActive == true && ${langFilter(locale)}] | order(_updatedAt desc) [0] {
   _id, message, severity
 }`;
 
-// Category queries
-export const allCategoriesQuery = `*[_type == "category"] | order(orderRank asc) {
+// ── Categories ────────────────────────────────────────────────
+
+export const allCategoriesQuery = (locale: Locale) =>
+  `*[_type == "category" && ${langFilter(locale)}] | order(orderRank asc) {
   _id, title, slug, description, icon,
-  "articleCount": count(*[_type == "article" && references(^._id)])
+  "articleCount": count(*[_type == "article" && references(^._id) && ${langFilter(locale)}])
 }`;
 
-export const categoryBySlugQuery = `*[_type == "category" && slug.current == $slug][0] {
+export const categoryBySlugQuery = (locale: Locale) =>
+  `*[_type == "category" && slug.current == $slug && ${langFilter(locale)}][0] {
   _id, title, slug, description, icon, seo,
-  "articles": *[_type == "article" && references(^._id)] | order(orderRank asc) {
+  "articles": *[_type == "article" && references(^._id) && ${langFilter(locale)}] | order(orderRank asc) {
     _id, title, slug, excerpt, _updatedAt
   }
 }`;
 
-// Article queries
-export const articleBySlugQuery = `*[_type == "article" && slug.current == $slug][0] {
+// ── Articles ──────────────────────────────────────────────────
+
+export const articleBySlugQuery = (locale: Locale) =>
+  `*[_type == "article" && slug.current == $slug && ${langFilter(locale)}][0] {
   _id, title, slug, body, excerpt, _updatedAt, seo,
   "category": category->{_id, title, slug},
   "relatedArticles": relatedArticles[]->{_id, title, slug, excerpt}
 }`;
 
-export const featuredArticlesQuery = `*[_type == "article" && featured == true] | order(orderRank asc) [0...6] {
+export const featuredArticlesQuery = (locale: Locale) =>
+  `*[_type == "article" && featured == true && ${langFilter(locale)}] | order(orderRank asc) [0...6] {
   _id, title, slug, excerpt,
   "category": category->{title, slug}
 }`;
 
-export const searchArticlesQuery = `*[_type == "article" && (
+export const searchArticlesQuery = (locale: Locale) =>
+  `*[_type == "article" && ${langFilter(locale)} && (
   title match $query + "*" ||
   excerpt match $query + "*" ||
   pt::text(body) match $query + "*"
@@ -39,7 +58,15 @@ export const searchArticlesQuery = `*[_type == "article" && (
   "category": category->{title, slug}
 }`;
 
-// Sitemap queries
+// ── Settings ──────────────────────────────────────────────────
+
+export const helpCenterSettingsQuery = (locale: Locale) =>
+  `*[_type == "helpCenterSettings" && ${langFilter(locale)}][0] {
+  title, description, heroTitle, heroSubtitle
+}`;
+
+// ── Sitemap (language-agnostic — needs ALL locales) ───────────
+
 export const allArticleSlugsQuery = `*[_type == "article"] | order(_updatedAt desc) {
   "slug": slug.current, _updatedAt
 }`;
@@ -48,42 +75,40 @@ export const allCategorySlugsQuery = `*[_type == "category"] | order(_updatedAt 
   "slug": slug.current, _updatedAt
 }`;
 
-// Settings
-export const helpCenterSettingsQuery = `*[_type == "helpCenterSettings"][0] {
-  title, description, heroTitle, heroSubtitle
-}`;
+// ── Fetchers ──────────────────────────────────────────────────
 
-// Fetchers
-export async function getActiveBanner() {
-  return client.fetch(activeBannerQuery) as Promise<{
+export async function getActiveBanner(locale: Locale = "en") {
+  return client.fetch(activeBannerQuery(locale)) as Promise<{
     _id: string;
     message: string;
     severity: "announcement" | "warning" | "critical";
   } | null>;
 }
 
-export async function getAllCategories() {
-  return client.fetch(allCategoriesQuery);
+export async function getAllCategories(locale: Locale = "en") {
+  return client.fetch(allCategoriesQuery(locale));
 }
 
-export async function getCategoryBySlug(slug: string) {
-  return client.fetch(categoryBySlugQuery, { slug });
+export async function getCategoryBySlug(slug: string, locale: Locale = "en") {
+  return client.fetch(categoryBySlugQuery(locale), { slug });
 }
 
-export async function getArticleBySlug(slug: string) {
-  return client.fetch(articleBySlugQuery, { slug });
+export async function getArticleBySlug(slug: string, locale: Locale = "en") {
+  return client.fetch(articleBySlugQuery(locale), { slug });
 }
 
-export async function getFeaturedArticles() {
-  return client.fetch(featuredArticlesQuery);
+export async function getFeaturedArticles(locale: Locale = "en") {
+  return client.fetch(featuredArticlesQuery(locale));
 }
 
-export async function searchArticles(query: string) {
-  return client.fetch(searchArticlesQuery, { query } as Record<string, string>);
+export async function searchArticles(query: string, locale: Locale = "en") {
+  return client.fetch(searchArticlesQuery(locale), {
+    query,
+  } as Record<string, string>);
 }
 
-export async function getHelpCenterSettings() {
-  return client.fetch(helpCenterSettingsQuery);
+export async function getHelpCenterSettings(locale: Locale = "en") {
+  return client.fetch(helpCenterSettingsQuery(locale));
 }
 
 export async function getAllArticleSlugs() {

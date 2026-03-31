@@ -1,0 +1,86 @@
+{
+  "nav": {
+    "home": "Home",
+    "contact": "Contact",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "skipToContent": "Skip to main content"
+  },
+  "hero": {
+    "defaultTitle": "How can we help?",
+    "defaultSubtitle": "Search our help center for answers"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search for help...",
+    "button": "Search",
+    "resultsCount": "{count} result{plural} for \"{query}\"",
+    "noResults": "No results found. Try different keywords."
+  },
+  "categories": {
+    "title": "Browse by Category",
+    "articlesCount": "{count} article{plural}"
+  },
+  "featured": {
+    "title": "Popular Articles"
+  },
+  "article": {
+    "lastUpdated": "Last updated: {date}",
+    "relatedArticles": "Related Articles",
+    "feedback": {
+      "question": "Was this article helpful?",
+      "yes": "Yes",
+      "no": "No",
+      "yesLabel": "Yes, this article was helpful",
+      "noLabel": "No, this article was not helpful",
+      "thanks": "Thanks for your feedback!"
+    }
+  },
+  "contact": {
+    "title": "Contact Support",
+    "description": "Can't find what you're looking for? Send us a message.",
+    "name": "Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "submit": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent! We'll get back to you soon.",
+    "error": "Something went wrong. Please try again."
+  },
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "home": "Home"
+  },
+  "chat": {
+    "open": "Open chat",
+    "close": "Close chat",
+    "title": "Spark Driver™ Assistant",
+    "subtitle": "Ask me anything about Spark Driver",
+    "inputPlaceholder": "Ask a question...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "error": "Sorry, something went wrong. Please try again.",
+    "dismiss": "Dismiss"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "We're having trouble loading this page. Please try again.",
+    "retry": "Try again"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "← Back to Help Center"
+  },
+  "footer": {
+    "copyright": "© {year} Walmart Inc. All rights reserved."
+  },
+  "banner": {
+    "dismiss": "Dismiss notification"
+  },
+  "i18n": {
+    "notTranslated": "This page is not yet available in Spanish. Showing the English version.",
+    "switchTo": "Español"
+  }
+}

@@ -11,6 +11,8 @@ import {
 } from "react";
 import Link from "next/link";
 import Markdown from "react-markdown";
+import type { Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 // --- Safe Markdown rendering with article link support ---
 
@@ -20,8 +22,9 @@ import Markdown from "react-markdown";
 
 const SLUG_LINK_RE = /\]\(slug:([^)]+)\)/g;
 
-function preprocessLinks(text: string): string {
-  return text.replace(SLUG_LINK_RE, "](/article/$1)");
+function preprocessLinks(text: string, locale: Locale): string {
+  const prefix = locale === "en" ? "" : `/${locale}`;
+  return text.replace(SLUG_LINK_RE, `](${prefix}/article/$1)`);
 }
 
 // Custom link renderer: internal /article/ links use Next.js Link,
@@ -33,7 +36,7 @@ function MarkdownLink({
   href?: string;
   children?: React.ReactNode;
 }) {
-  if (href?.startsWith("/article/")) {
+  if (href && (href.startsWith("/article/") || href.startsWith("/es/article/"))) {
     return (
       <Link
         href={href}
@@ -64,7 +67,7 @@ function getMessageText(message: UIMessage): string {
     .join("");
 }
 
-function ChatMessage({ message }: { message: UIMessage }) {
+function ChatMessage({ message, locale = "en" }: { message: UIMessage; locale?: Locale }) {
   const isUser = message.role === "user";
   const text = getMessageText(message);
   if (!text) return null;
@@ -86,7 +89,7 @@ function ChatMessage({ message }: { message: UIMessage }) {
         ) : (
           <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-2 prose-a:text-spark-blue">
             <Markdown components={{ a: MarkdownLink }}>
-              {preprocessLinks(text)}
+              {preprocessLinks(text, locale)}
             </Markdown>
           </div>
         )}
@@ -147,7 +150,8 @@ function useBodyScrollLock(locked: boolean) {
 
 // --- Main widget ---
 
-export function ChatWidget() {
+export function ChatWidget({ locale = "en" }: { locale?: Locale }) {
+  const dict = getDictionary(locale);
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -223,15 +227,15 @@ export function ChatWidget() {
               </div>
               <div>
                 <p id={headingId} className="font-semibold text-sm">
-                  Spark Driver Help
+                  {dict.chat.title}
                 </p>
-                <p className="text-xs text-white/80">Ask me anything</p>
+                <p className="text-xs text-white/80">{dict.chat.subtitle}</p>
               </div>
             </div>
             <button
               onClick={handleClose}
               className="text-white/80 hover:text-white transition-colors p-1"
-              aria-label="Close chat"
+              aria-label={dict.chat.close}
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
@@ -248,27 +252,30 @@ export function ChatWidget() {
           <div
             className="flex-1 overflow-y-auto p-4 min-h-0"
             role="list"
-            aria-label="Chat messages"
+            aria-label={locale === "es" ? "Mensajes del chat" : "Chat messages"}
             aria-live="polite"
             aria-relevant="additions"
           >
             {messages.length === 0 && (
               <div className="text-center text-gray-500 text-sm mt-8" role="listitem">
                 <p className="text-2xl mb-2">👋</p>
-                <p className="font-medium">Hi there!</p>
+                <p className="font-medium">
+                  {locale === "es" ? "¡Hola!" : "Hi there!"}
+                </p>
                 <p className="mt-1">
-                  Ask me about earnings, deliveries, the app, or anything else
-                  about Spark Driver.
+                  {locale === "es"
+                    ? "Pregúntame sobre ganancias, entregas, la app o cualquier cosa sobre Spark Driver."
+                    : "Ask me about earnings, deliveries, the app, or anything else about Spark Driver."}
                 </p>
               </div>
             )}
             {messages.map((m) => (
-              <ChatMessage key={m.id} message={m} />
+              <ChatMessage key={m.id} message={m} locale={locale} />
             ))}
             {isLoading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex justify-start mb-3" role="listitem">
                 <div className="bg-gray-100 rounded-2xl rounded-bl-md px-4 py-3">
-                  <div className="flex gap-1.5" aria-label="Assistant is typing">
+                  <div className="flex gap-1.5" aria-label={locale === "es" ? "El asistente está escribiendo" : "Assistant is typing"}>
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
@@ -281,7 +288,7 @@ export function ChatWidget() {
                 className="text-center text-red-500 text-sm my-2 px-4 py-2 bg-red-50 rounded-lg"
                 role="alert"
               >
-                Something went wrong. Please try again.
+                {dict.chat.error}
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -293,14 +300,14 @@ export function ChatWidget() {
             className="border-t border-gray-200 p-3 flex gap-2 flex-shrink-0"
           >
             <label htmlFor="chat-input" className="sr-only">
-              Ask a question
+              {dict.chat.inputPlaceholder}
             </label>
             <input
               id="chat-input"
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question..."
+              placeholder={dict.chat.inputPlaceholder}
               className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-spark-blue focus:border-transparent"
               disabled={isLoading}
               maxLength={500}
@@ -310,7 +317,7 @@ export function ChatWidget() {
               type="submit"
               disabled={isLoading || !input.trim()}
               className="bg-spark-blue text-white px-3 py-2 rounded-xl text-sm font-medium hover:bg-spark-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Send message"
+              aria-label={dict.chat.send}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path
@@ -331,7 +338,7 @@ export function ChatWidget() {
         ref={fabRef}
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-4 right-4 z-50 w-14 h-14 bg-spark-blue text-white rounded-full shadow-lg hover:bg-spark-blue-dark transition-all hover:scale-105 flex items-center justify-center"
-        aria-label={isOpen ? "Close chat" : "Open chat"}
+        aria-label={isOpen ? dict.chat.close : dict.chat.open}
         aria-expanded={isOpen}
         aria-controls="chat-panel"
       >

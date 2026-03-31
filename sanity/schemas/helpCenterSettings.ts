@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { languageField } from "./fields/language";
 
 export const helpCenterSettings = defineType({
   name: "helpCenterSettings",
@@ -78,6 +79,9 @@ export const helpCenterSettings = defineType({
         }),
       ],
     }),
+
+    // ── i18n ───────────────────────────────────────────────────
+    languageField,
   ],
   // Singleton: only one instance should exist.
   // Enforce via desk structure (see deskStructure.ts).

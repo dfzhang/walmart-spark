@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { languageField } from "./fields/language";
 
 export const banner = defineType({
   name: "banner",
@@ -43,6 +44,9 @@ export const banner = defineType({
       description: "Only active banners are displayed. Deactivate instead of deleting for history.",
       initialValue: false,
     }),
+
+    // ── i18n ───────────────────────────────────────────────────
+    languageField,
   ],
   preview: {
     select: { title: "title", severity: "severity", isActive: "isActive" },
