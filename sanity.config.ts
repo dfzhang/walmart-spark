@@ -11,10 +11,10 @@ export const i18n = {
     { id: "en", title: "English" },
     { id: "es", title: "Spanish" },
   ],
-  defaultLanguage: "en",
+  defaultLanguage: "en" as const,
   /** Schema types that support document-level translation */
   schemaTypes: ["article", "category", "banner", "helpCenterSettings"],
-} as const;
+};
 
 export default defineConfig({
   name: "spark-driver-help-center",
@@ -27,7 +27,7 @@ export default defineConfig({
     structureTool({ structure }),
     documentInternationalization({
       supportedLanguages: i18n.languages,
-      schemaTypes: i18n.schemaTypes as unknown as string[],
+      schemaTypes: i18n.schemaTypes,
     }),
     agentContextPlugin(),
   ],
