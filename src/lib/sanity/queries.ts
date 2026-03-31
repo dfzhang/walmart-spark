@@ -1,5 +1,10 @@
 import { client } from "./client";
 
+// Banner query — single active banner, most recently updated wins
+export const activeBannerQuery = `*[_type == "banner" && isActive == true] | order(_updatedAt desc) [0] {
+  _id, message, severity
+}`;
+
 // Category queries
 export const allCategoriesQuery = `*[_type == "category"] | order(orderRank asc) {
   _id, title, slug, description, icon,
@@ -49,6 +54,14 @@ export const helpCenterSettingsQuery = `*[_type == "helpCenterSettings"][0] {
 }`;
 
 // Fetchers
+export async function getActiveBanner() {
+  return client.fetch(activeBannerQuery) as Promise<{
+    _id: string;
+    message: string;
+    severity: "announcement" | "warning" | "critical";
+  } | null>;
+}
+
 export async function getAllCategories() {
   return client.fetch(allCategoriesQuery);
 }
