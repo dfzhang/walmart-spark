@@ -32,7 +32,7 @@ function AccordionItem({
           onClick={onToggle}
           aria-expanded={isOpen}
           aria-controls={panelId}
-          className="w-full text-left px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-inset rounded-lg"
+          className="w-full text-left px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-inset rounded-lg"
         >
           {item.question}
           <span className="text-gray-400 ml-2" aria-hidden="true">

@@ -19,7 +19,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
             {item.href ? (
               <Link
                 href={item.href}
-                className="hover:text-[#0071DC] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0071DC] rounded px-0.5"
+                className="hover:text-spark-blue transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue rounded px-0.5"
               >
                 {item.label}
               </Link>

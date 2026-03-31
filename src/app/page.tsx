@@ -16,7 +16,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-[#0071DC] text-white pb-12 pt-8">
+      <section className="bg-spark-blue text-white pb-12 pt-8">
         <div className="mx-auto max-w-3xl px-4 text-center">
           <h1 className="text-3xl font-bold mb-2">
             {settings?.heroTitle || "How can we help?"}

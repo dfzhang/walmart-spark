@@ -38,9 +38,9 @@ export default async function SearchPage({
           <a
             key={r._id}
             href={`/article/${r.slug.current}`}
-            className="block bg-white rounded-lg border border-gray-200 p-4 hover:border-[#0071DC] hover:shadow-sm transition-all"
+            className="block bg-white rounded-lg border border-gray-200 p-4 hover:border-spark-blue hover:shadow-sm transition-all"
           >
-            <h3 className="font-medium text-[#0071DC]">{r.title}</h3>
+            <h3 className="font-medium text-spark-blue">{r.title}</h3>
             {r.category && (
               <span className="text-xs text-gray-400">{r.category.title}</span>
             )}

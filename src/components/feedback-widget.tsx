@@ -25,14 +25,14 @@ export function FeedbackWidget({ articleId }: { articleId: string }) {
       <div className="flex justify-center gap-3">
         <button
           onClick={() => handleFeedback("yes")}
-          className="px-4 py-1.5 rounded-full border border-gray-300 text-sm hover:bg-green-50 hover:border-green-300 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-offset-2"
+          className="px-4 py-1.5 rounded-full border border-gray-300 text-sm hover:bg-green-50 hover:border-green-300 transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2"
           aria-label="Yes, this article was helpful"
         >
           👍 Yes
         </button>
         <button
           onClick={() => handleFeedback("no")}
-          className="px-4 py-1.5 rounded-full border border-gray-300 text-sm hover:bg-red-50 hover:border-red-300 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-offset-2"
+          className="px-4 py-1.5 rounded-full border border-gray-300 text-sm hover:bg-red-50 hover:border-red-300 transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2"
           aria-label="No, this article was not helpful"
         >
           👎 No

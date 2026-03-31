@@ -20,10 +20,10 @@ export function CategoryCard({ category }: { category: Category }) {
   return (
     <Link
       href={`/category/${category.slug.current}`}
-      className="bg-white rounded-lg border border-gray-200 p-5 hover:border-[#0071DC] hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-offset-2"
+      className="bg-white rounded-lg border border-gray-200 p-5 hover:border-spark-blue hover:shadow-md transition-all group focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2"
     >
       <div className="text-2xl mb-2">{icon}</div>
-      <h3 className="font-semibold group-hover:text-[#0071DC] transition-colors">
+      <h3 className="font-semibold group-hover:text-spark-blue transition-colors">
         {category.title}
       </h3>
       <p className="text-sm text-gray-500 mt-1">

@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@theme {
+  --color-spark-blue: #0071DC;
+  --color-spark-blue-dark: #004F9A;
+  --color-spark-yellow: #FFC220;
+  --color-spark-yellow-dark: #E5A800;
+}

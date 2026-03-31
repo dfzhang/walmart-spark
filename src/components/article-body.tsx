@@ -75,9 +75,12 @@ const components = {
   },
   marks: {
     link: ({ children, value }: { children: React.ReactNode; value?: { href: string; openInNewTab?: boolean } }) => (
+      // Schema has initialValue: true for openInNewTab, so new links default to new tab.
+      // Migrated content without the field also opens in new tab — intentional for help
+      // center UX (drivers don't lose their place when following external links).
       <a
         href={value?.href}
-        className="text-[#0071DC] underline hover:text-[#004F9A]"
+        className="text-spark-blue underline hover:text-spark-blue-dark"
         target={value?.openInNewTab !== false ? "_blank" : undefined}
         rel={value?.openInNewTab !== false ? "noopener noreferrer" : undefined}
       >
@@ -85,12 +88,15 @@ const components = {
       </a>
     ),
     internalLink: ({ children, value }: { children: React.ReactNode; value?: { reference?: { _ref: string } } }) => {
-      // Reference _ref follows pattern "article-{slug}" — extract the slug for the URL
+      // Migration scripts use custom _id pattern "article-{slug}" (not UUIDs).
+      // All 28 internalLink refs in the dataset follow this pattern.
+      // If Sanity Studio creates docs with UUID _ids, this will need a GROQ
+      // join to resolve the reference server-side instead.
       const ref = value?.reference?._ref || "";
       const slug = ref.replace(/^article-/, "");
       if (!slug) return <>{children}</>;
       return (
-        <a href={`/article/${slug}`} className="text-[#0071DC] underline hover:text-[#004F9A]">
+        <a href={`/article/${slug}`} className="text-spark-blue underline hover:text-spark-blue-dark">
           {children}
         </a>
       );

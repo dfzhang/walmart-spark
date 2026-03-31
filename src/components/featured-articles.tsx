@@ -12,7 +12,7 @@ export function FeaturedArticles({ articles }: { articles: FeaturedArticle[] }) 
         <Link
           key={article._id}
           href={`/article/${article.slug.current}`}
-          className="bg-[#FFC220]/10 border border-[#FFC220]/30 rounded-lg p-4 hover:bg-[#FFC220]/20 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-offset-2"
+          className="bg-spark-yellow/10 border border-spark-yellow/30 rounded-lg p-4 hover:bg-spark-yellow/20 transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2"
         >
           <h3 className="font-medium text-sm">{article.title}</h3>
           {article.category && (

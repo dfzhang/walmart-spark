@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getCategoryBySlug, getAllCategories } from "@/lib/sanity";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import type { ArticleSummary, SeoFields } from "@/lib/types";
@@ -67,16 +68,16 @@ export default async function CategoryPage({
 
       <div className="space-y-3">
         {category.articles.map((article) => (
-          <a
+          <Link
             key={article._id}
             href={`/article/${article.slug.current}`}
-            className="block bg-white rounded-lg border border-gray-200 p-4 hover:border-[#0071DC] hover:shadow-sm transition-all"
+            className="block bg-white rounded-lg border border-gray-200 p-4 hover:border-spark-blue hover:shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2 rounded-lg"
           >
-            <h3 className="font-medium text-[#0071DC]">{article.title}</h3>
+            <h3 className="font-medium text-spark-blue">{article.title}</h3>
             {article.excerpt && (
               <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.excerpt}</p>
             )}
-          </a>
+          </Link>
         ))}
       </div>
 

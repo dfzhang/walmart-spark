@@ -62,7 +62,7 @@ export default function ContactPage() {
             name="name"
             required
             autoComplete="name"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:border-transparent"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-spark-blue focus:border-transparent"
           />
         </div>
         <div>
@@ -75,7 +75,7 @@ export default function ContactPage() {
             type="email"
             required
             autoComplete="email"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:border-transparent"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-spark-blue focus:border-transparent"
           />
         </div>
         <div>
@@ -86,7 +86,7 @@ export default function ContactPage() {
             id="subject"
             name="subject"
             required
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:border-transparent"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-spark-blue focus:border-transparent"
           />
         </div>
         <div>
@@ -98,13 +98,13 @@ export default function ContactPage() {
             name="message"
             rows={5}
             required
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:border-transparent"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-spark-blue focus:border-transparent"
           />
         </div>
         <button
           type="submit"
           disabled={status === "sending"}
-          className="bg-[#0071DC] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#004F9A] disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:ring-offset-2"
+          className="bg-spark-blue text-white px-6 py-2 rounded-lg font-medium hover:bg-spark-blue-dark disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2"
         >
           {status === "sending" ? "Sending..." : "Send Message"}
         </button>

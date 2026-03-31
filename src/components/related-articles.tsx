@@ -10,7 +10,7 @@ export function RelatedArticles({ articles }: { articles: ArticleSummary[] }) {
           <Link
             key={a._id}
             href={`/article/${a.slug.current}`}
-            className="block text-[#0071DC] hover:underline text-sm focus:outline-none focus:ring-2 focus:ring-[#0071DC] rounded px-0.5"
+            className="block text-spark-blue hover:underline text-sm focus:outline-none focus:ring-2 focus:ring-spark-blue rounded px-0.5"
           >
             {a.title}
           </Link>

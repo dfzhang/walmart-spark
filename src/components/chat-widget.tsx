@@ -37,7 +37,7 @@ function MarkdownLink({
     return (
       <Link
         href={href}
-        className="text-[#0071DC] underline hover:text-[#004F9A]"
+        className="text-spark-blue underline hover:text-spark-blue-dark"
       >
         {children}
       </Link>
@@ -48,7 +48,7 @@ function MarkdownLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-[#0071DC] underline hover:text-[#004F9A]"
+      className="text-spark-blue underline hover:text-spark-blue-dark"
     >
       {children}
     </a>
@@ -77,14 +77,14 @@ function ChatMessage({ message }: { message: UIMessage }) {
       <div
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
           isUser
-            ? "bg-[#0071DC] text-white rounded-br-md"
+            ? "bg-spark-blue text-white rounded-br-md"
             : "bg-gray-100 text-gray-900 rounded-bl-md"
         }`}
       >
         {isUser ? (
           <p>{text}</p>
         ) : (
-          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-2 prose-a:text-[#0071DC]">
+          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-2 prose-a:text-spark-blue">
             <Markdown components={{ a: MarkdownLink }}>
               {preprocessLinks(text)}
             </Markdown>
@@ -206,6 +206,7 @@ export function ChatWidget() {
       {/* Chat Panel */}
       {isOpen && (
         <div
+          id="chat-panel"
           ref={panelRef}
           role="dialog"
           aria-modal="true"
@@ -215,7 +216,7 @@ export function ChatWidget() {
           style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
         >
           {/* Header */}
-          <div className="bg-[#0071DC] text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="bg-spark-blue text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-sm">
                 ⚡
@@ -300,7 +301,7 @@ export function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question..."
-              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0071DC] focus:border-transparent"
+              className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-spark-blue focus:border-transparent"
               disabled={isLoading}
               maxLength={500}
               autoComplete="off"
@@ -308,7 +309,7 @@ export function ChatWidget() {
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="bg-[#0071DC] text-white px-3 py-2 rounded-xl text-sm font-medium hover:bg-[#004F9A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-spark-blue text-white px-3 py-2 rounded-xl text-sm font-medium hover:bg-spark-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               aria-label="Send message"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -329,7 +330,7 @@ export function ChatWidget() {
       <button
         ref={fabRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 z-50 w-14 h-14 bg-[#0071DC] text-white rounded-full shadow-lg hover:bg-[#004F9A] transition-all hover:scale-105 flex items-center justify-center"
+        className="fixed bottom-4 right-4 z-50 w-14 h-14 bg-spark-blue text-white rounded-full shadow-lg hover:bg-spark-blue-dark transition-all hover:scale-105 flex items-center justify-center"
         aria-label={isOpen ? "Close chat" : "Open chat"}
         aria-expanded={isOpen}
         aria-controls="chat-panel"
