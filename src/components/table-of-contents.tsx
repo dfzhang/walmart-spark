@@ -82,10 +82,10 @@ export function TableOfContents({
               <a
                 href={`#${heading.id}`}
                 onClick={() => setMobileOpen(false)}
-                className={`block py-1 px-2 rounded transition-colors ${
+                className={`block py-1 px-2 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue ${
                   isActive
-                    ? "text-spark-blue font-medium bg-blue-50"
-                    : "text-gray-600 hover:text-spark-blue hover:bg-gray-50"
+                    ? "text-spark-blue font-medium bg-blue-50 border-l-2 border-spark-blue"
+                    : "text-gray-600 hover:text-spark-blue hover:bg-gray-50 border-l-2 border-transparent"
                 }`}
               >
                 {heading.text}
@@ -100,7 +100,7 @@ export function TableOfContents({
   return (
     <>
       {/* Desktop: sticky sidebar */}
-      <aside className="hidden lg:block" aria-label={label}>
+      <aside className="hidden lg:block">
         <div className="sticky top-8">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
             {label}
