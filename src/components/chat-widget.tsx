@@ -7,63 +7,52 @@ import {
   useRef,
   useEffect,
   useCallback,
-  type ReactNode,
   type KeyboardEvent,
 } from "react";
 import Link from "next/link";
+import Markdown from "react-markdown";
 
-// --- Safe article link parsing (no dangerouslySetInnerHTML) ---
+// --- Safe Markdown rendering with article link support ---
 
-interface TextSegment {
-  type: "text";
-  content: string;
+// The chatbot emits [Title](slug:article-slug) for article citations.
+// We convert these to standard markdown links before rendering, then
+// react-markdown's custom link component handles the routing.
+
+const SLUG_LINK_RE = /\]\(slug:([^)]+)\)/g;
+
+function preprocessLinks(text: string): string {
+  return text.replace(SLUG_LINK_RE, "](/article/$1)");
 }
 
-interface LinkSegment {
-  type: "link";
-  title: string;
-  slug: string;
-}
-
-type Segment = TextSegment | LinkSegment;
-
-const ARTICLE_LINK_RE = /\[([^\]]+)\]\(slug:([^)]+)\)/g;
-
-function parseSegments(text: string): Segment[] {
-  const segments: Segment[] = [];
-  let lastIndex = 0;
-
-  for (const match of text.matchAll(ARTICLE_LINK_RE)) {
-    const matchIndex = match.index!;
-    if (matchIndex > lastIndex) {
-      segments.push({ type: "text", content: text.slice(lastIndex, matchIndex) });
-    }
-    segments.push({ type: "link", title: match[1], slug: match[2] });
-    lastIndex = matchIndex + match[0].length;
+// Custom link renderer: internal /article/ links use Next.js Link,
+// external links open in a new tab with noopener.
+function MarkdownLink({
+  href,
+  children,
+}: {
+  href?: string;
+  children?: React.ReactNode;
+}) {
+  if (href?.startsWith("/article/")) {
+    return (
+      <Link
+        href={href}
+        className="text-[#0071DC] underline hover:text-[#004F9A]"
+      >
+        {children}
+      </Link>
+    );
   }
-
-  if (lastIndex < text.length) {
-    segments.push({ type: "text", content: text.slice(lastIndex) });
-  }
-
-  return segments;
-}
-
-function renderSegments(segments: Segment[]): ReactNode[] {
-  return segments.map((seg, i) => {
-    if (seg.type === "link") {
-      return (
-        <Link
-          key={i}
-          href={`/article/${seg.slug}`}
-          className="text-[#0071DC] underline hover:text-[#004F9A]"
-        >
-          {seg.title}
-        </Link>
-      );
-    }
-    return <span key={i}>{seg.content}</span>;
-  });
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-[#0071DC] underline hover:text-[#004F9A]"
+    >
+      {children}
+    </a>
+  );
 }
 
 // --- Message components ---
@@ -95,8 +84,10 @@ function ChatMessage({ message }: { message: UIMessage }) {
         {isUser ? (
           <p>{text}</p>
         ) : (
-          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-2 prose-a:text-[#0071DC] whitespace-pre-wrap">
-            {renderSegments(parseSegments(text))}
+          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-headings:my-2 prose-a:text-[#0071DC]">
+            <Markdown components={{ a: MarkdownLink }}>
+              {preprocessLinks(text)}
+            </Markdown>
           </div>
         )}
       </div>

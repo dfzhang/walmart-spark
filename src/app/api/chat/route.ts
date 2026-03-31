@@ -177,7 +177,7 @@ export async function POST(req: Request) {
       system: SYSTEM_PROMPT,
       messages: modelMessages,
       tools,
-      maxTokens: 1024,
+      maxOutputTokens: 1024,
       stopWhen: stepCountIs(10),
       onFinish: async ({ steps }) => {
         if (steps.length > 5) {

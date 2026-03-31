@@ -50,11 +50,11 @@ export default function RootLayout({
           </div>
         </header>
 
-        <main id="main-content" role="main" tabIndex={-1} className="outline-none">
+        <main id="main-content" tabIndex={-1} className="outline-none">
           {children}
         </main>
 
-        <footer className="bg-gray-800 text-gray-400 text-sm mt-16" role="contentinfo">
+        <footer className="bg-gray-800 text-gray-400 text-sm mt-16">
           <div className="mx-auto max-w-5xl px-4 py-8 text-center">
             © {new Date().getFullYear()} Walmart Inc. All rights reserved.
           </div>
