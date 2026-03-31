@@ -29,7 +29,6 @@ export function LanguageSwitcher({ locale }: { locale: Locale }) {
   return (
     <Link
       href={targetPath}
-      locale={false}
       aria-label={ariaLabel}
       className="text-sm font-medium px-2 py-1 rounded border border-white/30 hover:bg-white/10 hover:text-spark-yellow transition-colors focus:outline-none focus:ring-2 focus:ring-spark-yellow"
     >
