@@ -1,8 +1,21 @@
 "use client";
 
+import Image from "next/image";
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import { FaqAccordion } from "./faq-accordion";
+import { urlForImage } from "@/lib/sanity";
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  python: "Python",
+  json: "JSON",
+  html: "HTML",
+  css: "CSS",
+  bash: "Bash",
+  text: "Plain Text",
+};
 
 const components = {
   types: {
@@ -24,6 +37,41 @@ const components = {
     faqSection: ({ value }: { value: { items: { question: string; answer: PortableTextBlock[] }[] } }) => (
       <FaqAccordion items={value.items || []} />
     ),
+    codeBlock: ({ value }: { value: { language?: string; code: string } }) => {
+      const lang = value.language || "text";
+      const label = LANGUAGE_LABELS[lang] || lang;
+      return (
+        <div className="my-4 rounded-lg overflow-hidden border border-gray-200">
+          <div className="bg-gray-800 text-gray-300 text-xs px-4 py-1.5 font-mono">
+            {label}
+          </div>
+          <pre className="bg-gray-900 text-gray-100 p-4 overflow-x-auto text-sm leading-relaxed">
+            <code>{value.code}</code>
+          </pre>
+        </div>
+      );
+    },
+    image: ({ value }: { value: { asset: { _ref: string }; alt?: string; caption?: string } }) => {
+      if (!value?.asset?._ref) return null;
+      const url = urlForImage(value).width(800).auto("format").quality(80).url();
+      return (
+        <figure className="my-6">
+          <Image
+            src={url}
+            alt={value.alt || ""}
+            width={800}
+            height={450}
+            className="rounded-lg w-full h-auto"
+            sizes="(max-width: 768px) 100vw, 800px"
+          />
+          {value.caption && (
+            <figcaption className="text-sm text-gray-500 mt-2 text-center">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
   },
   marks: {
     link: ({ children, value }: { children: React.ReactNode; value?: { href: string; openInNewTab?: boolean } }) => (

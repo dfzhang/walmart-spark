@@ -24,7 +24,7 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        <header className="bg-[#0071DC] text-white" role="banner">
+        <header className="bg-[#0071DC] text-white">
           <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
             <Link
               href="/"

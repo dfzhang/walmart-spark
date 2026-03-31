@@ -1,5 +1,6 @@
 export { client } from "./client";
 export { sanityConfig } from "./config";
+export { urlForImage } from "./image";
 export {
   getAllCategories,
   getCategoryBySlug,
