@@ -1,0 +1,86 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "contact": "Contacto",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "hero": {
+    "defaultTitle": "¿Cómo podemos ayudarte?",
+    "defaultSubtitle": "Busca respuestas en nuestro centro de ayuda"
+  },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "Buscar ayuda...",
+    "button": "Buscar",
+    "resultsCount": "{count} resultado{plural} para \"{query}\"",
+    "noResults": "No se encontraron resultados. Intenta con otras palabras."
+  },
+  "categories": {
+    "title": "Explorar por Categoría",
+    "articlesCount": "{count} artículo{plural}"
+  },
+  "featured": {
+    "title": "Artículos Populares"
+  },
+  "article": {
+    "lastUpdated": "Última actualización: {date}",
+    "relatedArticles": "Artículos Relacionados",
+    "feedback": {
+      "question": "¿Te resultó útil este artículo?",
+      "yes": "Sí",
+      "no": "No",
+      "yesLabel": "Sí, este artículo fue útil",
+      "noLabel": "No, este artículo no fue útil",
+      "thanks": "¡Gracias por tu opinión!"
+    }
+  },
+  "contact": {
+    "title": "Contactar Soporte",
+    "description": "¿No encuentras lo que buscas? Envíanos un mensaje.",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "submit": "Enviar Mensaje",
+    "sending": "Enviando...",
+    "success": "¡Mensaje enviado! Te responderemos pronto.",
+    "error": "Algo salió mal. Por favor, inténtalo de nuevo."
+  },
+  "breadcrumb": {
+    "label": "Ruta de navegación",
+    "home": "Inicio"
+  },
+  "chat": {
+    "open": "Abrir chat",
+    "close": "Cerrar chat",
+    "title": "Asistente Spark Driver™",
+    "subtitle": "Pregúntame sobre Spark Driver",
+    "inputPlaceholder": "Haz una pregunta...",
+    "send": "Enviar",
+    "thinking": "Pensando...",
+    "error": "Lo sentimos, algo salió mal. Por favor, inténtalo de nuevo.",
+    "dismiss": "Cerrar"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Estamos teniendo problemas para cargar esta página. Por favor, inténtalo de nuevo.",
+    "retry": "Intentar de nuevo"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o ha sido movida.",
+    "backHome": "← Volver al Centro de Ayuda"
+  },
+  "footer": {
+    "copyright": "© {year} Walmart Inc. Todos los derechos reservados."
+  },
+  "banner": {
+    "dismiss": "Cerrar notificación"
+  },
+  "i18n": {
+    "notTranslated": "Esta página aún no está disponible en español. Mostrando la versión en inglés.",
+    "switchTo": "English"
+  }
+}

@@ -3,6 +3,7 @@ import {
   orderRankField,
   orderRankOrdering,
 } from "@sanity/orderable-document-list";
+import { languageField } from "./fields/language";
 
 export const article = defineType({
   name: "article",
@@ -176,6 +177,9 @@ export const article = defineType({
       title: "SEO Settings",
       group: "seo",
     }),
+
+    // ── i18n ───────────────────────────────────────────────────
+    languageField,
   ],
   preview: {
     select: {

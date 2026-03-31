@@ -6,6 +6,9 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ArticleBody } from "@/components/article-body";
 import { RelatedArticles } from "@/components/related-articles";
 import { FeedbackWidget } from "@/components/feedback-widget";
+import { isValidLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { localePath } from "@/lib/i18n/config";
 import type { PortableTextBlock } from "@portabletext/types";
 
 export const revalidate = 60;
@@ -62,7 +65,7 @@ function buildFaqJsonLd(faqSections: FaqSection[], articleTitle: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const article = (await getArticleBySlug(slug)) as Article | null;
@@ -89,16 +92,21 @@ export async function generateMetadata({
 export default async function ArticlePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, locale: localeParam } = await params;
+  const locale = (isValidLocale(localeParam) ? localeParam : "en") as Locale;
+  const dict = getDictionary(locale);
+
   const article = (await getArticleBySlug(slug)) as Article | null;
   if (!article) notFound();
 
+  const dateLocale = locale === "es" ? "es-ES" : "en-US";
+
   const breadcrumbs = [
-    { label: "Home", href: "/" },
+    { label: dict.breadcrumb.home, href: localePath(locale, "/") },
     ...(article.category
-      ? [{ label: article.category.title, href: `/category/${article.category.slug.current}` }]
+      ? [{ label: article.category.title, href: localePath(locale, `/category/${article.category.slug.current}`) }]
       : []),
     { label: article.title },
   ];
@@ -114,21 +122,24 @@ export default async function ArticlePage({
         <h1 className="text-2xl font-bold mb-2">{article.title}</h1>
         {article._updatedAt && (
           <p className="text-sm text-gray-400 mb-6">
-            Last updated: {new Date(article._updatedAt).toLocaleDateString("en-US", {
-              year: "numeric", month: "long", day: "numeric",
-            })}
+            {dict.article.lastUpdated.replace(
+              "{date}",
+              new Date(article._updatedAt).toLocaleDateString(dateLocale, {
+                year: "numeric", month: "long", day: "numeric",
+              })
+            )}
           </p>
         )}
 
         <div className="prose prose-blue max-w-none">
-          <ArticleBody body={article.body} />
+          <ArticleBody body={article.body} locale={locale} />
         </div>
       </article>
 
-      <FeedbackWidget articleId={article._id} />
+      <FeedbackWidget articleId={article._id} locale={locale} />
 
       {article.relatedArticles && article.relatedArticles.length > 0 && (
-        <RelatedArticles articles={article.relatedArticles} />
+        <RelatedArticles articles={article.relatedArticles} locale={locale} />
       )}
 
       {faqJsonLd && (

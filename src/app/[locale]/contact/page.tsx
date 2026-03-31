@@ -1,8 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { isValidLocale, type Locale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 export default function ContactPage() {
+  const params = useParams<{ locale: string }>();
+  const locale = (isValidLocale(params.locale) ? params.locale : "en") as Locale;
+  const dict = getDictionary(locale);
+
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const successRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLParagraphElement>(null);
@@ -43,19 +50,21 @@ export default function ContactPage() {
         aria-live="polite"
         tabIndex={-1}
       >
-        <h1 className="text-2xl font-bold text-green-600 mb-2">Message Sent!</h1>
-        <p className="text-gray-600">We&apos;ll get back to you as soon as possible.</p>
+        <h1 className="text-2xl font-bold text-green-600 mb-2">
+          {dict.contact.success}
+        </h1>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-xl px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Contact Support</h1>
+      <h1 className="text-2xl font-bold mb-2">{dict.contact.title}</h1>
+      <p className="text-gray-600 mb-6">{dict.contact.description}</p>
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-1">
-            Name
+            {dict.contact.name}
           </label>
           <input
             id="name"
@@ -67,7 +76,7 @@ export default function ContactPage() {
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium mb-1">
-            Email
+            {dict.contact.email}
           </label>
           <input
             id="email"
@@ -80,7 +89,7 @@ export default function ContactPage() {
         </div>
         <div>
           <label htmlFor="subject" className="block text-sm font-medium mb-1">
-            Subject
+            {dict.contact.subject}
           </label>
           <input
             id="subject"
@@ -91,7 +100,7 @@ export default function ContactPage() {
         </div>
         <div>
           <label htmlFor="message" className="block text-sm font-medium mb-1">
-            Message
+            {dict.contact.message}
           </label>
           <textarea
             id="message"
@@ -106,7 +115,7 @@ export default function ContactPage() {
           disabled={status === "sending"}
           className="bg-spark-blue text-white px-6 py-2 rounded-lg font-medium hover:bg-spark-blue-dark disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-spark-blue focus:ring-offset-2"
         >
-          {status === "sending" ? "Sending..." : "Send Message"}
+          {status === "sending" ? dict.contact.sending : dict.contact.submit}
         </button>
         {status === "error" && (
           <p
@@ -115,7 +124,7 @@ export default function ContactPage() {
             role="alert"
             tabIndex={-1}
           >
-            Something went wrong. Please try again.
+            {dict.contact.error}
           </p>
         )}
       </form>
