@@ -169,6 +169,15 @@ export const article = defineType({
       group: "metadata",
       initialValue: false,
     }),
+    defineField({
+      name: "legalReviewNeeded",
+      type: "boolean",
+      title: "Legal Review Needed",
+      description:
+        "When enabled, this article requires legal approval before publishing.",
+      group: "metadata",
+      initialValue: false,
+    }),
     orderRankField({ type: "article" }),
 
     // ── SEO group ──────────────────────────────────────────────
