@@ -22,6 +22,14 @@ const CSS = `
   cursor: default !important;
 }
 
+/* Re-enable clicks on interactive children inside cards */
+[data-rfd-drag-handle-draggable-id] button,
+[data-rfd-drag-handle-draggable-id] a,
+[data-rfd-drag-handle-draggable-id] [role="button"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
 /* Remove grab cursor from draggable cards */
 [data-rfd-draggable-id] {
   cursor: default !important;
