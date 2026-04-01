@@ -32,6 +32,11 @@
     "sanity-plugin-workflow": "^3.0.14",
     "styled-components": "^6.3.12"
   },
+  "pnpm": {
+    "patchedDependencies": {
+      "sanity-plugin-utils@1.8.0": "patches/sanity-plugin-utils@1.8.0.patch"
+    }
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22.0.0",

@@ -1,0 +1,22 @@
+diff --git a/lib/index.js b/lib/index.js
+index 1234567..abcdefg 100644
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -615,7 +615,7 @@
+       try {
+         const aclData = await client.request({
+           url: `/projects/${projectId}/acl`
+-        }), userIds = aclData.map((user) => user.projectUserId), userIdChunks = chunkArray(userIds, 200);
++        }), humanAcl = aclData.filter((user) => !user.isRobot), userIds = humanAcl.map((user) => user.projectUserId), userIdChunks = chunkArray(userIds, 200);
+         let usersData = [];
+         for (const chunk of userIdChunks) {
+           const chunkedUserIds = chunk.join(","), response = await client.request({
+@@ -624,7 +624,7 @@
+           usersData = [...usersData, ...response];
+         }
+         const usersWithRoles = usersData.map((user) => {
+-          const userRoles = aclData.find(
++          const userRoles = humanAcl.find(
+             (aclUser) => aclUser.projectUserId === user.id
+           )?.roles || [];
+           return {
