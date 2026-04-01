@@ -1,0 +1,1719 @@
+[
+  {
+    "options": {
+      "apiVersion": "2025-02-19",
+      "languages": [
+        {
+          "id": "en",
+          "title": "English"
+        },
+        {
+          "id": "es",
+          "title": "Spanish"
+        }
+      ]
+    },
+    "validation": [
+      {
+        "level": "error",
+        "rules": [
+          {
+            "flag": "custom"
+          }
+        ]
+      }
+    ],
+    "of": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "type": "internationalizedArrayReferenceValue",
+        "title": "Internationalized array reference"
+      }
+    ],
+    "name": "internationalizedArrayReference",
+    "type": "array",
+    "title": "Internationalized array"
+  },
+  {
+    "fields": [
+      {
+        "weak": false,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "to": [
+          {
+            "type": "article"
+          },
+          {
+            "type": "category"
+          },
+          {
+            "type": "banner"
+          },
+          {
+            "type": "helpCenterSettings"
+          }
+        ],
+        "name": "value",
+        "type": "reference"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "hidden": true,
+        "name": "language",
+        "type": "string"
+      }
+    ],
+    "name": "internationalizedArrayReferenceValue",
+    "type": "object",
+    "title": "Internationalized array reference"
+  },
+  {
+    "liveEdit": true,
+    "fields": [
+      {
+        "options": {
+          "apiVersion": "2025-02-19",
+          "languages": [
+            {
+              "id": "en",
+              "title": "English"
+            },
+            {
+              "id": "es",
+              "title": "Spanish"
+            }
+          ]
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "name": "translations",
+        "type": "internationalizedArrayReference"
+      },
+      {
+        "options": {
+          "list": [
+            "article",
+            "category",
+            "banner",
+            "helpCenterSettings"
+          ]
+        },
+        "description": "Optional: Used to filter the reference fields above so all translations share the same types.",
+        "of": [
+          {
+            "type": "string"
+          }
+        ],
+        "readOnly": "conditional",
+        "name": "schemaTypes",
+        "type": "array"
+      }
+    ],
+    "name": "translation.metadata",
+    "type": "document",
+    "title": "Translation metadata"
+  },
+  {
+    "fields": [
+      {
+        "readOnly": true,
+        "hidden": true,
+        "name": "path",
+        "type": "string"
+      },
+      {
+        "of": [
+          {
+            "fieldsets": [
+              {
+                "name": "appearance",
+                "options": {
+                  "collapsible": true,
+                  "collapsed": true
+                }
+              }
+            ],
+            "type": "sanity.assist.instruction",
+            "title": "Instruction"
+          }
+        ],
+        "name": "instructions",
+        "type": "array"
+      }
+    ],
+    "name": "sanity.assist.schemaType.field",
+    "type": "object",
+    "title": "Field prompt"
+  },
+  {
+    "fields": [
+      {
+        "name": "prompt",
+        "type": "sanity.assist.instruction.prompt",
+        "title": "Instruction"
+      },
+      {
+        "name": "icon",
+        "type": "string",
+        "fieldset": "appearance"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "fieldset": "appearance"
+      },
+      {
+        "readOnly": "conditional",
+        "name": "userId",
+        "type": "string",
+        "title": "Visibility",
+        "fieldset": "appearance"
+      },
+      {
+        "hidden": true,
+        "name": "createdById",
+        "type": "string",
+        "title": "Created by",
+        "fieldset": "appearance"
+      },
+      {
+        "of": [
+          {
+            "type": "sanity.assist.output.field",
+            "title": "Output field"
+          },
+          {
+            "type": "sanity.assist.output.type",
+            "title": "Output type"
+          }
+        ],
+        "name": "output",
+        "type": "array",
+        "title": "Output filter"
+      }
+    ],
+    "fieldsets": [
+      {
+        "name": "appearance",
+        "options": {
+          "collapsible": true,
+          "collapsed": true
+        }
+      }
+    ],
+    "name": "sanity.assist.instruction",
+    "type": "object",
+    "title": "Instruction"
+  },
+  {
+    "options": {
+      "modal": {
+        "type": "popover"
+      }
+    },
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "name": "path",
+        "type": "string",
+        "title": "Field"
+      }
+    ],
+    "name": "sanity.assist.instruction.fieldRef",
+    "type": "object",
+    "title": "Field"
+  },
+  {
+    "of": [
+      {
+        "marks": {
+          "annotations": []
+        },
+        "of": [
+          {
+            "options": {
+              "modal": {
+                "type": "popover"
+              }
+            },
+            "name": "sanity.assist.instruction.fieldRef",
+            "type": "sanity.assist.instruction.fieldRef",
+            "title": "Field"
+          },
+          {
+            "options": {
+              "modal": {
+                "type": "popover",
+                "width": "auto"
+              }
+            },
+            "name": "sanity.assist.instruction.context",
+            "type": "sanity.assist.instruction.context",
+            "title": "AI context"
+          },
+          {
+            "options": {
+              "modal": {
+                "type": "popover",
+                "width": 1
+              }
+            },
+            "name": "sanity.assist.instruction.userInput",
+            "type": "sanity.assist.instruction.userInput",
+            "title": "User input"
+          }
+        ],
+        "styles": [
+          {
+            "value": "normal",
+            "title": "Normal"
+          }
+        ],
+        "type": "block"
+      }
+    ],
+    "name": "sanity.assist.instruction.prompt",
+    "type": "array",
+    "title": "Prompt"
+  },
+  {
+    "options": {
+      "modal": {
+        "type": "popover",
+        "width": 1
+      }
+    },
+    "fields": [
+      {
+        "placeholder": "Provide instruction text",
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "The header above the user input text field",
+        "name": "message",
+        "type": "string",
+        "title": "User input title"
+      },
+      {
+        "rows": 3,
+        "description": "The description above the user input text field",
+        "name": "description",
+        "type": "text",
+        "title": "User input description"
+      }
+    ],
+    "name": "sanity.assist.instruction.userInput",
+    "type": "object",
+    "title": "User input"
+  },
+  {
+    "options": {
+      "modal": {
+        "type": "popover",
+        "width": "auto"
+      }
+    },
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "The referenced context will be inserted into the instruction",
+        "to": [
+          {
+            "liveEdit": true,
+            "type": "assist.instruction.context"
+          }
+        ],
+        "name": "reference",
+        "type": "reference",
+        "title": "Context"
+      }
+    ],
+    "name": "sanity.assist.instruction.context",
+    "type": "object",
+    "title": "AI context"
+  },
+  {
+    "fields": [
+      {
+        "name": "path",
+        "type": "string"
+      }
+    ],
+    "name": "sanity.assist.output.field",
+    "type": "object",
+    "title": "Output field"
+  },
+  {
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      }
+    ],
+    "name": "sanity.assist.output.type",
+    "type": "object",
+    "title": "Output type"
+  },
+  {
+    "liveEdit": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "of": [
+          {
+            "type": "sanity.assist.schemaType.field",
+            "title": "Field prompt"
+          }
+        ],
+        "name": "fields",
+        "type": "array"
+      }
+    ],
+    "name": "sanity.assist.schemaType.annotations",
+    "type": "object",
+    "title": "AI Document"
+  },
+  {
+    "liveEdit": true,
+    "fields": [
+      {
+        "of": [
+          {
+            "type": "sanity.assist.instructionTask",
+            "title": "Instruction task"
+          }
+        ],
+        "name": "tasks",
+        "type": "array"
+      }
+    ],
+    "name": "sanity.assist.task.status",
+    "type": "object",
+    "title": "Document instruction status"
+  },
+  {
+    "fields": [
+      {
+        "name": "path",
+        "type": "string"
+      },
+      {
+        "name": "instructionKey",
+        "type": "string",
+        "title": "Instruction key"
+      },
+      {
+        "name": "started",
+        "type": "datetime"
+      },
+      {
+        "name": "updated",
+        "type": "datetime"
+      },
+      {
+        "name": "info",
+        "type": "string"
+      }
+    ],
+    "name": "sanity.assist.instructionTask",
+    "type": "object",
+    "title": "Instruction task"
+  },
+  {
+    "liveEdit": true,
+    "fields": [
+      {
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": []
+            },
+            "of": [],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              }
+            ],
+            "type": "block"
+          }
+        ],
+        "name": "context",
+        "type": "array"
+      }
+    ],
+    "name": "assist.instruction.context",
+    "type": "document",
+    "title": "AI context"
+  },
+  {
+    "initialValue": {
+      "version": "1"
+    },
+    "fields": [
+      {
+        "hidden": true,
+        "name": "version",
+        "type": "string"
+      },
+      {
+        "placeholder": "My Agent Context",
+        "description": "The name of the agent context",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "name"
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "The slug of the agent context. This is used to identify the agent context in the MCP URL.",
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              }
+            ]
+          }
+        ],
+        "description": "Control what content AI agents can access. Leave empty for full access, or pick specific document types. Use the GROQ tab for advanced filters.",
+        "name": "groqFilter",
+        "type": "string",
+        "title": "Content filter"
+      },
+      {
+        "description": "Custom instructions for how AI agents should work with your content.",
+        "name": "instructions",
+        "type": "text"
+      }
+    ],
+    "name": "sanity.agentContext",
+    "type": "document",
+    "title": "Agent Context"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "For editorial reference only — not displayed on the site.",
+        "name": "title",
+        "type": "string",
+        "title": "Internal Label"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 200
+              }
+            ]
+          }
+        ],
+        "description": "The text displayed to users. Keep it short and actionable.",
+        "name": "message",
+        "type": "string",
+        "title": "Banner Message"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Announcement (blue)",
+              "value": "announcement"
+            },
+            {
+              "title": "Warning (yellow)",
+              "value": "warning"
+            },
+            {
+              "title": "Critical (red)",
+              "value": "critical"
+            }
+          ],
+          "layout": "radio"
+        },
+        "initialValue": "announcement",
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "announcement",
+                  "warning",
+                  "critical"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "Controls the banner color and ARIA behavior.",
+        "name": "severity",
+        "type": "string"
+      },
+      {
+        "initialValue": false,
+        "description": "Only active banners are displayed. Deactivate instead of deleting for history.",
+        "name": "isActive",
+        "type": "boolean",
+        "title": "Active"
+      },
+      {
+        "initialValue": "en",
+        "readOnly": true,
+        "hidden": true,
+        "name": "language",
+        "type": "string"
+      }
+    ],
+    "name": "banner",
+    "type": "document",
+    "title": "Notification Banner"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 80
+              }
+            ]
+          }
+        ],
+        "description": "Category name shown to users (e.g. \"Getting Started\").",
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "URL-friendly identifier. Auto-generated from title.",
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 200
+              }
+            ],
+            "message": "Keep under 200 characters for card display."
+          }
+        ],
+        "description": "Short summary shown on the category card.",
+        "name": "description",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Category icon displayed on the homepage grid.",
+        "name": "icon",
+        "type": "image"
+      },
+      {
+        "readOnly": true,
+        "hidden": true,
+        "name": "orderRank",
+        "type": "string"
+      },
+      {
+        "options": {
+          "collapsible": true,
+          "collapsed": true
+        },
+        "name": "seo",
+        "type": "seo",
+        "title": "SEO Settings"
+      },
+      {
+        "initialValue": "en",
+        "readOnly": true,
+        "hidden": true,
+        "name": "language",
+        "type": "string"
+      }
+    ],
+    "name": "category",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "max",
+                "constraint": 100
+              }
+            ]
+          }
+        ],
+        "name": "title",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "title",
+          "maxLength": 96
+        },
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 200
+              }
+            ],
+            "message": "Keep under 200 characters for card display."
+          }
+        ],
+        "description": "Brief summary for listings and search results.",
+        "name": "excerpt",
+        "type": "text"
+      },
+      {
+        "of": [
+          {
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bullet"
+              },
+              {
+                "value": "number",
+                "title": "Numbered"
+              }
+            ],
+            "marks": {
+              "annotations": [
+                {
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "level": "error",
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^mailto$/",
+                                    "/^tel$/"
+                                  ],
+                                  "allowRelative": false,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "name": "href",
+                      "type": "url",
+                      "title": "URL"
+                    },
+                    {
+                      "initialValue": true,
+                      "name": "openInNewTab",
+                      "type": "boolean",
+                      "title": "Open in new tab"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object",
+                  "title": "External Link"
+                },
+                {
+                  "fields": [
+                    {
+                      "to": [
+                        {
+                          "type": "article"
+                        },
+                        {
+                          "type": "category"
+                        }
+                      ],
+                      "name": "reference",
+                      "type": "reference"
+                    }
+                  ],
+                  "name": "internalLink",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Emphasis"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                }
+              ]
+            },
+            "of": [],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h2",
+                "title": "H2"
+              },
+              {
+                "value": "h3",
+                "title": "H3"
+              },
+              {
+                "value": "h4",
+                "title": "H4"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "type": "block"
+          },
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "description": "Required for accessibility.",
+                "name": "alt",
+                "type": "string",
+                "title": "Alt Text"
+              },
+              {
+                "name": "caption",
+                "type": "string"
+              }
+            ],
+            "type": "image"
+          },
+          {
+            "type": "callout"
+          },
+          {
+            "type": "faqSection",
+            "title": "FAQ Section"
+          },
+          {
+            "type": "codeBlock"
+          }
+        ],
+        "name": "body",
+        "type": "array"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "to": [
+          {
+            "type": "category"
+          }
+        ],
+        "name": "category",
+        "type": "reference"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 5
+              }
+            ]
+          }
+        ],
+        "description": "Up to 5 related articles shown at the bottom of the page.",
+        "of": [
+          {
+            "to": [
+              {
+                "type": "article"
+              }
+            ],
+            "type": "reference",
+            "title": "Reference to article"
+          }
+        ],
+        "name": "relatedArticles",
+        "type": "array"
+      },
+      {
+        "initialValue": false,
+        "description": "Show this article prominently on the homepage.",
+        "name": "featured",
+        "type": "boolean",
+        "title": "Featured Article"
+      },
+      {
+        "readOnly": true,
+        "hidden": true,
+        "name": "orderRank",
+        "type": "string"
+      },
+      {
+        "options": {
+          "collapsible": true,
+          "collapsed": true
+        },
+        "name": "seo",
+        "type": "seo",
+        "title": "SEO Settings"
+      },
+      {
+        "initialValue": "en",
+        "readOnly": true,
+        "hidden": true,
+        "name": "language",
+        "type": "string"
+      }
+    ],
+    "name": "article",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "initialValue": "Spark Driver™ Help Center",
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "description": "Displayed in the header and browser tab.",
+        "name": "siteName",
+        "type": "string"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Site logo displayed in the header.",
+        "name": "logo",
+        "type": "image"
+      },
+      {
+        "description": "Email address for the contact form.",
+        "name": "contactEmail",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "description": "Link to external support portal (if any).",
+        "name": "supportUrl",
+        "type": "url",
+        "title": "Support URL"
+      },
+      {
+        "initialValue": "How can we help?",
+        "description": "Placeholder shown in the search bar.",
+        "name": "searchPlaceholder",
+        "type": "string",
+        "title": "Search Placeholder Text"
+      },
+      {
+        "initialValue": 3,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 0
+              },
+              {
+                "flag": "max",
+                "constraint": 10
+              }
+            ]
+          }
+        ],
+        "description": "How many featured articles to show on the homepage.",
+        "name": "featuredArticlesCount",
+        "type": "number",
+        "title": "Featured Articles to Display"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "name": "label",
+                "type": "string"
+              },
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      },
+                      {
+                        "flag": "uri",
+                        "constraint": {
+                          "options": {
+                            "scheme": [
+                              "/^http$/",
+                              "/^https$/",
+                              "/^mailto$/"
+                            ],
+                            "allowRelative": false,
+                            "relativeOnly": false,
+                            "allowCredentials": false
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "name": "url",
+                "type": "url",
+                "title": "URL"
+              }
+            ],
+            "type": "object",
+            "name": "footerLink"
+          }
+        ],
+        "name": "footerLinks",
+        "type": "array"
+      },
+      {
+        "initialValue": "en",
+        "readOnly": true,
+        "hidden": true,
+        "name": "language",
+        "type": "string"
+      }
+    ],
+    "name": "helpCenterSettings",
+    "type": "document"
+  },
+  {
+    "options": {
+      "collapsible": true,
+      "collapsed": true
+    },
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 60
+              }
+            ],
+            "message": "Keep under 60 characters for best SEO results."
+          }
+        ],
+        "description": "Overrides the default page title for search engines.",
+        "name": "metaTitle",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "validation": [
+          {
+            "level": "warning",
+            "rules": [
+              {
+                "flag": "max",
+                "constraint": 160
+              }
+            ],
+            "message": "Keep under 160 characters for best SEO results."
+          }
+        ],
+        "description": "Overrides the default description for search engines.",
+        "name": "metaDescription",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Image shown when shared on social media.",
+        "name": "ogImage",
+        "type": "image",
+        "title": "Open Graph Image"
+      }
+    ],
+    "name": "seo",
+    "type": "object",
+    "title": "SEO Settings"
+  },
+  {
+    "fields": [
+      {
+        "options": {
+          "list": [
+            {
+              "title": "ℹ️ Info",
+              "value": "info"
+            },
+            {
+              "title": "⚠️ Warning",
+              "value": "warning"
+            },
+            {
+              "title": "💡 Tip",
+              "value": "tip"
+            }
+          ],
+          "layout": "radio",
+          "direction": "horizontal"
+        },
+        "initialValue": "info",
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "info",
+                  "warning",
+                  "tip"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "style",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "of": [
+          {
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "level": "error",
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ],
+              "decorators": [
+                {
+                  "value": "strong",
+                  "title": "Strong"
+                },
+                {
+                  "value": "em",
+                  "title": "Italic"
+                },
+                {
+                  "value": "code",
+                  "title": "Code"
+                },
+                {
+                  "value": "underline",
+                  "title": "Underline"
+                },
+                {
+                  "value": "strike-through",
+                  "title": "Strike"
+                }
+              ]
+            },
+            "of": [],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              },
+              {
+                "value": "h1",
+                "title": "Heading 1"
+              },
+              {
+                "value": "h2",
+                "title": "Heading 2"
+              },
+              {
+                "value": "h3",
+                "title": "Heading 3"
+              },
+              {
+                "value": "h4",
+                "title": "Heading 4"
+              },
+              {
+                "value": "h5",
+                "title": "Heading 5"
+              },
+              {
+                "value": "h6",
+                "title": "Heading 6"
+              },
+              {
+                "value": "blockquote",
+                "title": "Quote"
+              }
+            ],
+            "type": "block"
+          }
+        ],
+        "name": "content",
+        "type": "array"
+      }
+    ],
+    "name": "callout",
+    "type": "object"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "message": "Add at least one FAQ item."
+          }
+        ],
+        "of": [
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "name": "question",
+                "type": "string"
+              },
+              {
+                "validation": [
+                  {
+                    "level": "error",
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ]
+                  }
+                ],
+                "of": [
+                  {
+                    "lists": [
+                      {
+                        "value": "bullet",
+                        "title": "Bulleted list"
+                      },
+                      {
+                        "value": "number",
+                        "title": "Numbered list"
+                      }
+                    ],
+                    "marks": {
+                      "annotations": [
+                        {
+                          "i18nTitleKey": "inputs.portable-text.annotation.link",
+                          "options": {
+                            "modal": {
+                              "type": "popover"
+                            }
+                          },
+                          "fields": [
+                            {
+                              "validation": [
+                                {
+                                  "level": "error",
+                                  "rules": [
+                                    {
+                                      "flag": "uri",
+                                      "constraint": {
+                                        "options": {
+                                          "scheme": [
+                                            "/^http$/",
+                                            "/^https$/",
+                                            "/^tel$/",
+                                            "/^mailto$/"
+                                          ],
+                                          "allowRelative": true,
+                                          "relativeOnly": false,
+                                          "allowCredentials": false
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              ],
+                              "description": "A valid web, email, phone, or relative link.",
+                              "name": "href",
+                              "type": "url",
+                              "title": "Link"
+                            }
+                          ],
+                          "name": "link",
+                          "type": "object"
+                        }
+                      ],
+                      "decorators": [
+                        {
+                          "value": "strong",
+                          "title": "Strong"
+                        },
+                        {
+                          "value": "em",
+                          "title": "Italic"
+                        },
+                        {
+                          "value": "code",
+                          "title": "Code"
+                        },
+                        {
+                          "value": "underline",
+                          "title": "Underline"
+                        },
+                        {
+                          "value": "strike-through",
+                          "title": "Strike"
+                        }
+                      ]
+                    },
+                    "of": [],
+                    "styles": [
+                      {
+                        "value": "normal",
+                        "title": "Normal"
+                      },
+                      {
+                        "value": "h1",
+                        "title": "Heading 1"
+                      },
+                      {
+                        "value": "h2",
+                        "title": "Heading 2"
+                      },
+                      {
+                        "value": "h3",
+                        "title": "Heading 3"
+                      },
+                      {
+                        "value": "h4",
+                        "title": "Heading 4"
+                      },
+                      {
+                        "value": "h5",
+                        "title": "Heading 5"
+                      },
+                      {
+                        "value": "h6",
+                        "title": "Heading 6"
+                      },
+                      {
+                        "value": "blockquote",
+                        "title": "Quote"
+                      }
+                    ],
+                    "type": "block"
+                  }
+                ],
+                "name": "answer",
+                "type": "array"
+              }
+            ],
+            "type": "object",
+            "name": "faqItem",
+            "title": "FAQ Item"
+          }
+        ],
+        "name": "items",
+        "type": "array",
+        "title": "Questions & Answers"
+      }
+    ],
+    "name": "faqSection",
+    "type": "object",
+    "title": "FAQ Section"
+  },
+  {
+    "fields": [
+      {
+        "options": {
+          "list": [
+            {
+              "title": "JavaScript",
+              "value": "javascript"
+            },
+            {
+              "title": "TypeScript",
+              "value": "typescript"
+            },
+            {
+              "title": "Python",
+              "value": "python"
+            },
+            {
+              "title": "JSON",
+              "value": "json"
+            },
+            {
+              "title": "HTML",
+              "value": "html"
+            },
+            {
+              "title": "CSS",
+              "value": "css"
+            },
+            {
+              "title": "Bash / Shell",
+              "value": "bash"
+            },
+            {
+              "title": "Plain Text",
+              "value": "text"
+            }
+          ]
+        },
+        "initialValue": "text",
+        "name": "language",
+        "type": "string"
+      },
+      {
+        "rows": 12,
+        "validation": [
+          {
+            "level": "error",
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ]
+          }
+        ],
+        "name": "code",
+        "type": "text"
+      }
+    ],
+    "name": "codeBlock",
+    "type": "object"
+  }
+]
