@@ -8,6 +8,7 @@ import { workflow, defineStates } from "sanity-plugin-workflow";
 import { schemaTypes } from "./sanity/schemas";
 import { structure, newDocumentOptions } from "./sanity/deskStructure";
 import { resolve } from "./sanity/presentation/resolve";
+import { legalReviewActions } from "./sanity/actions/legalReviewGuard";
 
 /** Supported languages — English (default) + Spanish */
 export const i18n = {
@@ -84,5 +85,9 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
     templates: newDocumentOptions,
+  },
+
+  document: {
+    actions: legalReviewActions,
   },
 });
