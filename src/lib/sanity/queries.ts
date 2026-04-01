@@ -1,5 +1,4 @@
 import { sanityFetch } from "./live";
-import { client } from "./client";
 import type { Locale } from "@/lib/i18n/config";
 
 /**
