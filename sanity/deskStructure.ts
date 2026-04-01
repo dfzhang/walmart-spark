@@ -105,6 +105,19 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
             )
         ),
 
+      // ── Needs Legal Review ─────────────────────────────────
+      S.listItem()
+        .title("Needs Legal Review")
+        .icon(() => "⚖️")
+        .child(
+          S.documentList()
+            .title("Articles Requiring Legal Review")
+            .filter(
+              `_type == "article" && legalReviewNeeded == true && (!defined(language) || language == "en")`
+            )
+            .defaultOrdering([{ field: "_updatedAt", direction: "desc" }])
+        ),
+
       S.divider(),
 
       // ── Notification Banners ────────────────────────────────
