@@ -63,13 +63,21 @@ export default defineConfig({
           id: "inReview",
           title: "In Review",
           color: "primary",
+          transitions: ["changesRequested", "pendingLegalReview", "approved"],
+        },
+        {
+          id: "pendingLegalReview",
+          title: "Pending Legal Review",
+          color: "warning",
+          roles: ["legal", "administrator"],
+          requireAssignment: true,
           transitions: ["changesRequested", "approved"],
         },
         {
           id: "changesRequested",
           title: "Changes Requested",
           color: "warning",
-          transitions: ["inReview", "approved"],
+          transitions: ["inReview", "pendingLegalReview", "approved"],
         },
         {
           id: "approved",
