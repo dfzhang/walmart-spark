@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { searchArticles } from "@/lib/sanity";
+import { searchArticles } from "@/lib/sanity/queries";
 import { SearchBar } from "@/components/search-bar";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
