@@ -69,8 +69,6 @@ export default defineConfig({
           id: "pendingLegalReview",
           title: "Pending Legal Review",
           color: "warning",
-          roles: ["legal", "administrator"],
-          requireAssignment: true,
           transitions: ["changesRequested", "approved"],
         },
         {
