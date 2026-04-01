@@ -4,6 +4,7 @@ import { presentationTool } from "sanity/presentation";
 import { agentContextPlugin } from "@sanity/agent-context/studio";
 import { documentInternationalization } from "@sanity/document-internationalization";
 import { assist } from "@sanity/assist";
+import { workflow, defineStates } from "sanity-plugin-workflow";
 import { schemaTypes } from "./sanity/schemas";
 import { structure, newDocumentOptions } from "./sanity/deskStructure";
 import { resolve } from "./sanity/presentation/resolve";
@@ -53,6 +54,29 @@ export default defineConfig({
           documentTypes: [...i18n.schemaTypes],
         },
       },
+    }),
+    workflow({
+      schemaTypes: [...i18n.schemaTypes],
+      states: defineStates([
+        {
+          id: "inReview",
+          title: "In Review",
+          color: "primary",
+          transitions: ["changesRequested", "approved"],
+        },
+        {
+          id: "changesRequested",
+          title: "Changes Requested",
+          color: "warning",
+          transitions: ["inReview", "approved"],
+        },
+        {
+          id: "approved",
+          title: "Approved",
+          color: "success",
+          transitions: ["changesRequested"],
+        },
+      ]),
     }),
     agentContextPlugin(),
   ],

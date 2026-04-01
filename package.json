@@ -29,6 +29,7 @@
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",
     "sanity": "^5.18.0",
+    "sanity-plugin-workflow": "^3.0.14",
     "styled-components": "^6.3.12"
   },
   "devDependencies": {
