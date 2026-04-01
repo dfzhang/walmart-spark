@@ -11,4 +11,6 @@ export {
   getHelpCenterSettings,
   getAllArticleSlugs,
   getAllCategorySlugs,
+  getArticleBySlugForMetadata,
+  getCategoryBySlugForMetadata,
 } from "./queries";

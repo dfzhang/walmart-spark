@@ -1,4 +1,4 @@
-import { client } from "./client";
+import { sanityFetch } from "./live";
 import type { Locale } from "@/lib/i18n/config";
 
 /**
@@ -75,50 +75,103 @@ export const allCategorySlugsQuery = `*[_type == "category"] | order(_updatedAt 
   "slug": slug.current, _updatedAt
 }`;
 
-// ── Fetchers ──────────────────────────────────────────────────
+// ── Fetchers (live-aware via sanityFetch) ─────────────────────
 
 export async function getActiveBanner(locale: Locale = "en") {
-  return client.fetch(activeBannerQuery(locale)) as Promise<{
+  const { data } = await sanityFetch({
+    query: activeBannerQuery(locale),
+  });
+  return data as {
     _id: string;
     message: string;
     severity: "announcement" | "warning" | "critical";
-  } | null>;
+  } | null;
 }
 
 export async function getAllCategories(locale: Locale = "en") {
-  return client.fetch(allCategoriesQuery(locale));
+  const { data } = await sanityFetch({
+    query: allCategoriesQuery(locale),
+  });
+  return data;
 }
 
 export async function getCategoryBySlug(slug: string, locale: Locale = "en") {
-  return client.fetch(categoryBySlugQuery(locale), { slug });
+  const { data } = await sanityFetch({
+    query: categoryBySlugQuery(locale),
+    params: { slug },
+  });
+  return data;
 }
 
 export async function getArticleBySlug(slug: string, locale: Locale = "en") {
-  return client.fetch(articleBySlugQuery(locale), { slug });
+  const { data } = await sanityFetch({
+    query: articleBySlugQuery(locale),
+    params: { slug },
+  });
+  return data;
 }
 
 export async function getFeaturedArticles(locale: Locale = "en") {
-  return client.fetch(featuredArticlesQuery(locale));
+  const { data } = await sanityFetch({
+    query: featuredArticlesQuery(locale),
+  });
+  return data;
 }
 
 export async function searchArticles(query: string, locale: Locale = "en") {
-  return client.fetch(searchArticlesQuery(locale), {
-    query,
-  } as Record<string, string>);
+  // sanityFetch infers params from const query strings — dynamic GROQ
+  // builders return plain `string`, so we cast to satisfy the type.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = await (sanityFetch as any)({
+    query: searchArticlesQuery(locale),
+    params: { query },
+  });
+  return data;
 }
 
 export async function getHelpCenterSettings(locale: Locale = "en") {
-  return client.fetch(helpCenterSettingsQuery(locale));
+  const { data } = await sanityFetch({
+    query: helpCenterSettingsQuery(locale),
+  });
+  return data;
 }
 
+// ── Metadata helpers (no stega — prevents invisible chars in SEO) ──
+
+export async function getArticleBySlugForMetadata(slug: string, locale: Locale = "en") {
+  const { data } = await sanityFetch({
+    query: articleBySlugQuery(locale),
+    params: { slug },
+    stega: false,
+  });
+  return data;
+}
+
+export async function getCategoryBySlugForMetadata(slug: string, locale: Locale = "en") {
+  const { data } = await sanityFetch({
+    query: categoryBySlugQuery(locale),
+    params: { slug },
+    stega: false,
+  });
+  return data;
+}
+
+// ── Static generation helpers (published perspective, no stega) ──
+
 export async function getAllArticleSlugs() {
-  return client.fetch(allArticleSlugsQuery) as Promise<
-    { slug: string; _updatedAt: string }[]
-  >;
+  const { data } = await sanityFetch({
+    query: allArticleSlugsQuery,
+    perspective: "published",
+    stega: false,
+  });
+  return data as { slug: string; _updatedAt: string }[];
 }
 
 export async function getAllCategorySlugs() {
-  return client.fetch(allCategorySlugsQuery) as Promise<
-    { slug: string; _updatedAt: string }[]
-  >;
+  const { data } = await sanityFetch({
+    query: allCategorySlugsQuery,
+    perspective: "published",
+    stega: false,
+  });
+  return data as { slug: string; _updatedAt: string }[];
 }

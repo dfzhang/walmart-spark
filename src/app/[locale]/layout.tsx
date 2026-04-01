@@ -2,10 +2,14 @@ import "../globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
+import { SanityLive } from "@/lib/sanity/live";
 import { BannerLoader } from "@/components/banner-loader";
 import { ChatWidget } from "@/components/chat-widget";
 import { MobileNav } from "@/components/mobile-nav";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { DisableDraftMode } from "@/components/disable-draft-mode";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 
@@ -26,6 +30,7 @@ export default async function LocaleLayout({
 
   const locale = localeParam as Locale;
   const dict = getDictionary(locale);
+  const { isEnabled: isDraftMode } = await draftMode();
 
   const navLinks = [
     { href: localePath(locale, "/"), label: dict.nav.home },
@@ -91,6 +96,13 @@ export default async function LocaleLayout({
         </footer>
 
         <ChatWidget locale={locale} />
+        <SanityLive />
+        {isDraftMode && (
+          <>
+            <VisualEditing />
+            <DisableDraftMode />
+          </>
+        )}
       </body>
     </html>
   );

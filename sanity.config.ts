@@ -1,10 +1,12 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { presentationTool } from "sanity/presentation";
 import { agentContextPlugin } from "@sanity/agent-context/studio";
 import { documentInternationalization } from "@sanity/document-internationalization";
 import { assist } from "@sanity/assist";
 import { schemaTypes } from "./sanity/schemas";
 import { structure, newDocumentOptions } from "./sanity/deskStructure";
+import { resolve } from "./sanity/presentation/resolve";
 
 /** Supported languages — English (default) + Spanish */
 export const i18n = {
@@ -26,6 +28,16 @@ export default defineConfig({
 
   plugins: [
     structureTool({ structure }),
+    presentationTool({
+      resolve,
+      previewUrl: {
+        origin:
+          process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:3000",
+        previewMode: {
+          enable: "/api/draft-mode/enable",
+        },
+      },
+    }),
     documentInternationalization({
       supportedLanguages: i18n.languages,
       schemaTypes: i18n.schemaTypes,
