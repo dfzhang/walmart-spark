@@ -9,6 +9,7 @@ import { schemaTypes } from "./sanity/schemas";
 import { structure, newDocumentOptions } from "./sanity/deskStructure";
 import { resolve } from "./sanity/presentation/resolve";
 import { legalReviewActions } from "./sanity/actions/legalReviewGuard";
+import { disableWorkflowDrag } from "./sanity/plugins/disableWorkflowDrag";
 
 /** Supported languages — English (default) + Spanish */
 export const i18n = {
@@ -85,6 +86,7 @@ export default defineConfig({
         },
       ]),
     }),
+    disableWorkflowDrag(),
     agentContextPlugin(),
   ],
 
