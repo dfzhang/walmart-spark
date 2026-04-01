@@ -30,6 +30,10 @@ export default defineConfig({
     structureTool({ structure }),
     presentationTool({
       resolve,
+      allowOrigins: [
+        "https://walmart-spark-ten.vercel.app",
+        "http://localhost:*",
+      ],
       previewUrl: {
         origin:
           process.env.SANITY_STUDIO_PREVIEW_URL || "http://localhost:3000",
