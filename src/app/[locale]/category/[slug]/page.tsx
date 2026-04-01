@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCategoryBySlug, getCategoryBySlugForMetadata, getAllCategorySlugs } from "@/lib/sanity";
+import { getCategoryBySlug, getCategoryBySlugForMetadata, getAllCategorySlugs } from "@/lib/sanity/queries";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllArticleSlugs, getAllCategorySlugs } from "@/lib/sanity";
+import { getAllArticleSlugs, getAllCategorySlugs } from "@/lib/sanity/queries";
 import { locales, localePath, type Locale } from "@/lib/i18n/config";
 
 const BASE_URL =

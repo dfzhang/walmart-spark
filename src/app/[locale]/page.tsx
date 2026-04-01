@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllCategories, getFeaturedArticles, getHelpCenterSettings } from "@/lib/sanity";
+import { getAllCategories, getFeaturedArticles, getHelpCenterSettings } from "@/lib/sanity/queries";
 import type { Category, ArticleSummary, HelpCenterSettings } from "@/lib/types";
 import { SearchBar } from "@/components/search-bar";
 import { CategoryCard } from "@/components/category-card";

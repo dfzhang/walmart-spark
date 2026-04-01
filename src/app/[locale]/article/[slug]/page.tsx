@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getArticleBySlug, getArticleBySlugForMetadata } from "@/lib/sanity";
+import { getArticleBySlug, getArticleBySlugForMetadata } from "@/lib/sanity/queries";
 import type { Article } from "@/lib/types";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ArticleBody } from "@/components/article-body";

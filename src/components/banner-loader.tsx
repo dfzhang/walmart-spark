@@ -1,4 +1,4 @@
-import { getActiveBanner } from "@/lib/sanity";
+import { getActiveBanner } from "@/lib/sanity/queries";
 import { NotificationBanner } from "./notification-banner";
 import type { Locale } from "@/lib/i18n/config";
 
