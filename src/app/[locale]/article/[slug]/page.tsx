@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getArticleBySlug } from "@/lib/sanity";
+import { getArticleBySlug, getArticleBySlugForMetadata } from "@/lib/sanity";
 import type { Article } from "@/lib/types";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ArticleBody } from "@/components/article-body";
@@ -70,7 +70,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale: localeParam } = await params;
   const metaLocale = localeParam === "es" ? "es" as const : "en" as const;
-  const article = (await getArticleBySlug(slug, metaLocale)) as Article | null;
+  const article = (await getArticleBySlugForMetadata(slug, metaLocale)) as Article | null;
   if (!article) return {};
 
   const title = article.seo?.metaTitle || article.title;

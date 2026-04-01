@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCategoryBySlug, getAllCategorySlugs } from "@/lib/sanity";
+import { getCategoryBySlug, getCategoryBySlugForMetadata, getAllCategorySlugs } from "@/lib/sanity";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { isValidLocale, localePath, buildHreflangAlternates, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale: localeParam } = await params;
   const metaLocale = localeParam === "es" ? "es" as const : "en" as const;
-  const category = (await getCategoryBySlug(slug, metaLocale)) as CategoryWithArticles | null;
+  const category = (await getCategoryBySlugForMetadata(slug, metaLocale)) as CategoryWithArticles | null;
   if (!category) return {};
 
   const title = category.seo?.metaTitle || category.title;
