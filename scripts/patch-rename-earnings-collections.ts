@@ -35,7 +35,7 @@ const RENAMES: Array<{ _id: string; title: string; slug: string }> = [
   {
     _id: "faqcol-ebd4d4298423",
     title: "Earnings & Incentives FAQ",
-    slug: "earnings-and-incentives-faq",
+    slug: "earnings-incentives-faq",
   },
   {
     _id: "faqcol-f1aaa9af77ff",
