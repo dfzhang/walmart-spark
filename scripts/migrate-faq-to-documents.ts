@@ -82,11 +82,15 @@ function randomKey(): string {
 
 // ── Known FAQ collection names ─────────────────────────────────
 // Maps article slugs to human-readable collection titles.
-// Falls back to "{Article Title} FAQs" for unknown articles.
+// Keyed by "articleSlug" for single-section articles, or
+// "articleSlug:sectionIndex" for multi-section articles.
+// Falls back to "{Article Title} FAQs (N)" for unknown multi-section articles.
 const COLLECTION_NAMES: Record<string, string> = {
   "bagging-tips": "Bagging & Boxing Tips",
   "delivery-faqs": "Delivery FAQs",
-  "earnings": "Earnings FAQ",
+  "earnings:0": "OnePay FAQ",
+  "earnings:1": "Earnings & Incentives FAQ",
+  "earnings:2": "Direct Deposit FAQ",
   "earnings-qby": "Spark Driver Rewards FAQ",
   "general-faqs": "General FAQs",
 };
@@ -179,7 +183,9 @@ async function migrate() {
       });
 
       // Create faqCollection document
+      // Check section-specific key first (e.g. "earnings:1"), then article key
       const collectionTitle =
+        COLLECTION_NAMES[`${articleSlug}:${sectionIdx}`] ??
         COLLECTION_NAMES[articleSlug] ??
         (faqSections.length > 1
           ? `${article.title} FAQs (${sectionIdx + 1})`
