@@ -80,5 +80,20 @@ export const resolve: PresentationPluginOptions["resolve"] = {
         ],
       }),
     }),
+
+    // FAQs appear on article pages that embed them — link to home as fallback
+    faq: defineLocations({
+      select: { title: "question" },
+      resolve: (doc) => ({
+        locations: [{ title: doc?.title || "FAQ", href: "/" }],
+      }),
+    }),
+
+    faqCollection: defineLocations({
+      select: { title: "title" },
+      resolve: (doc) => ({
+        locations: [{ title: doc?.title || "FAQ Collection", href: "/" }],
+      }),
+    }),
   },
 };
