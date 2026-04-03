@@ -89,6 +89,28 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
                               .params({ language: lang.id })
                           ),
                         S.listItem()
+                          .title("FAQ Collections")
+                          .icon(() => "📋")
+                          .child(
+                            S.documentList()
+                              .title(`FAQ Collections (${lang.title})`)
+                              .filter(
+                                `_type == "faqCollection" && language == $language`
+                              )
+                              .params({ language: lang.id })
+                          ),
+                        S.listItem()
+                          .title("FAQs")
+                          .icon(() => "❓")
+                          .child(
+                            S.documentList()
+                              .title(`FAQs (${lang.title})`)
+                              .filter(
+                                `_type == "faq" && language == $language`
+                              )
+                              .params({ language: lang.id })
+                          ),
+                        S.listItem()
                           .title("Banners")
                           .icon(() => "📢")
                           .child(
@@ -116,6 +138,28 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
               `_type == "article" && legalReviewNeeded == true && (!defined(language) || language == "en")`
             )
             .defaultOrdering([{ field: "_updatedAt", direction: "desc" }])
+        ),
+
+      S.divider(),
+
+      // ── FAQ Collections ──────────────────────────────────────
+      S.listItem()
+        .title("FAQ Collections")
+        .icon(() => "📋")
+        .child(
+          S.documentTypeList("faqCollection")
+            .title("FAQ Collections")
+            .filter(`_type == "faqCollection" && (!defined(language) || language == "en")`)
+        ),
+
+      // ── All FAQs ─────────────────────────────────────────────
+      S.listItem()
+        .title("All FAQs")
+        .icon(() => "❓")
+        .child(
+          S.documentTypeList("faq")
+            .title("All FAQs")
+            .filter(`_type == "faq" && (!defined(language) || language == "en")`)
         ),
 
       S.divider(),

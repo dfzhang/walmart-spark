@@ -19,7 +19,7 @@ export const i18n = {
   ],
   defaultLanguage: "en" as const,
   /** Schema types that support document-level translation */
-  schemaTypes: ["article", "category", "banner", "helpCenterSettings"],
+  schemaTypes: ["article", "category", "banner", "helpCenterSettings", "faq", "faqCollection"],
 };
 
 export default defineConfig({

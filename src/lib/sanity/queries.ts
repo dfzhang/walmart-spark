@@ -37,7 +37,14 @@ export const categoryBySlugQuery = (locale: Locale) =>
 
 export const articleBySlugQuery = (locale: Locale) =>
   `*[_type == "article" && slug.current == $slug && ${langFilter(locale)}][0] {
-  _id, title, slug, body, excerpt, _updatedAt, seo,
+  _id, title, slug, excerpt, _updatedAt, seo,
+  body[]{
+    ...,
+    _type == "faqCollectionRef" => {
+      _type, _key,
+      collection->{ title, items[]->{ question, answer } }
+    }
+  },
   "category": category->{_id, title, slug},
   "relatedArticles": relatedArticles[]->{_id, title, slug, excerpt}
 }`;

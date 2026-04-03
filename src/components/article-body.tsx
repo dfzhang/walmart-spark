@@ -64,6 +64,20 @@ function buildComponents(locale: Locale, headingIds: Record<string, string>) {
       faqSection: ({ value }: { value: { items: { question: string; answer: PortableTextBlock[] }[] } }) => (
         <FaqAccordion items={value.items || []} />
       ),
+      faqCollectionRef: ({
+        value,
+      }: {
+        value: {
+          collection?: {
+            title?: string;
+            items?: { question: string; answer: PortableTextBlock[] }[];
+          };
+        };
+      }) => {
+        const items = value.collection?.items;
+        if (!items || items.length === 0) return null;
+        return <FaqAccordion items={items} />;
+      },
       codeBlock: ({ value }: { value: { language?: string; code: string } }) => {
         const lang = value.language || "text";
         const label = LANGUAGE_LABELS[lang] || lang;
