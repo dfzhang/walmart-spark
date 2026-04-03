@@ -24,7 +24,7 @@ export const i18n = {
 
 export default defineConfig({
   name: "spark-driver-help-center",
-  title: "Spark Driver™ Help Center",
+  title: "Spark Driver Help Center",
 
   projectId: "o01w1nx2",
   dataset: "production",
