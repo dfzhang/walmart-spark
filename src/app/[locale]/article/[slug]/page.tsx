@@ -19,15 +19,22 @@ interface FaqItem {
   answer: PortableTextBlock[];
 }
 
-interface FaqSection {
-  _type: "faqSection";
-  items: FaqItem[];
-}
-
-function extractFaqSections(body: PortableTextBlock[]): FaqSection[] {
-  return (body ?? []).filter(
-    (block) => (block as unknown as { _type: string })._type === "faqSection"
-  ) as unknown as FaqSection[];
+/**
+ * Extract all FAQ items from article body — handles both:
+ * - `faqSection` (inline, pre-migration)
+ * - `faqCollectionRef` (referenced, post-migration)
+ */
+function extractFaqItems(body: PortableTextBlock[]): FaqItem[] {
+  const items: FaqItem[] = [];
+  for (const block of body ?? []) {
+    const typed = block as unknown as { _type: string; items?: FaqItem[]; collection?: { items?: FaqItem[] } };
+    if (typed._type === "faqSection") {
+      items.push(...(typed.items ?? []));
+    } else if (typed._type === "faqCollectionRef") {
+      items.push(...(typed.collection?.items ?? []));
+    }
+  }
+  return items;
 }
 
 function portableTextToPlain(blocks: PortableTextBlock[]): string {
@@ -41,17 +48,15 @@ function portableTextToPlain(blocks: PortableTextBlock[]): string {
     .trim();
 }
 
-function buildFaqJsonLd(faqSections: FaqSection[], articleTitle: string) {
-  const questions = faqSections.flatMap((section) =>
-    (section.items ?? []).map((item) => ({
-      "@type": "Question" as const,
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer" as const,
-        text: portableTextToPlain(item.answer),
-      },
-    }))
-  );
+function buildFaqJsonLd(faqItems: FaqItem[], articleTitle: string) {
+  const questions = faqItems.map((item) => ({
+    "@type": "Question" as const,
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer" as const,
+      text: portableTextToPlain(item.answer),
+    },
+  }));
 
   if (questions.length === 0) return null;
 
@@ -116,8 +121,8 @@ export default async function ArticlePage({
     { label: article.title },
   ];
 
-  const faqSections = extractFaqSections(article.body);
-  const faqJsonLd = buildFaqJsonLd(faqSections, article.title);
+  const faqItems = extractFaqItems(article.body);
+  const faqJsonLd = buildFaqJsonLd(faqItems, article.title);
   const headings = extractHeadings(article.body);
   const headingIdMap = Object.fromEntries(buildHeadingIdMap(headings));
   const hasToc = headings.length >= 2;
