@@ -252,23 +252,33 @@ async function migrate() {
 
   const tx = client.transaction();
 
+  // Create all faq + faqCollection documents
   for (const plan of plans) {
-    // Create faq documents (createIfNotExists for idempotency)
     for (const faqDoc of plan.faqDocs) {
       tx.createIfNotExists(faqDoc);
     }
-
-    // Create faqCollection document
     tx.createIfNotExists(plan.collectionDoc);
+  }
 
-    // Patch article body: replace faqSection block with faqCollectionRef
-    const newBody = plan.article.body.map((block) => {
-      if (block._key === plan.blockKey && block._type === "faqSection") {
-        return plan.replacementBlock;
-      }
-      return block;
+  // Group plans by article and apply all replacements in a single body patch.
+  // This fixes a bug where multiple faqSection blocks in one article would
+  // cause the second patch to overwrite the first (both computed from the
+  // original body).
+  const plansByArticle = new Map<string, MigrationPlan[]>();
+  for (const plan of plans) {
+    const existing = plansByArticle.get(plan.article._id) ?? [];
+    existing.push(plan);
+    plansByArticle.set(plan.article._id, existing);
+  }
+
+  for (const [articleId, articlePlans] of plansByArticle) {
+    const newBody = articlePlans[0].article.body.map((block) => {
+      const matchingPlan = articlePlans.find(
+        (p) => p.blockKey === block._key && block._type === "faqSection"
+      );
+      return matchingPlan ? matchingPlan.replacementBlock : block;
     });
-    tx.patch(plan.article._id, (p) => p.set({ body: newBody }));
+    tx.patch(articleId, (p) => p.set({ body: newBody }));
   }
 
   const result = await tx.commit();
