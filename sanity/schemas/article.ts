@@ -5,6 +5,7 @@ import {
 } from "@sanity/orderable-document-list";
 import { languageField } from "./fields/language";
 import { isUniquePerLanguage } from "./fields/isUniquePerLanguage";
+import { styleGuideRules } from "../validation/styleGuideValidation";
 
 export const article = defineType({
   name: "article",
@@ -24,7 +25,10 @@ export const article = defineType({
       type: "string",
       title: "Title",
       group: "content",
-      validation: (Rule) => Rule.required().max(100),
+      validation: (Rule) => [
+        Rule.required().max(100),
+        ...styleGuideRules(Rule, "string"),
+      ],
     }),
     defineField({
       name: "slug",
@@ -41,14 +45,17 @@ export const article = defineType({
       description: "Brief summary for listings and search results.",
       group: "content",
       rows: 3,
-      validation: (Rule) =>
+      validation: (Rule) => [
         Rule.max(200).warning("Keep under 200 characters for card display."),
+        ...styleGuideRules(Rule, "text"),
+      ],
     }),
     defineField({
       name: "body",
       type: "array",
       title: "Body",
       group: "content",
+      validation: (Rule) => [...styleGuideRules(Rule, "pt")],
       of: [
         // Rich text blocks
         defineArrayMember({
