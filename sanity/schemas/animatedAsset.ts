@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { LottieFilePreview } from "../components/LottieFilePreview";
 
 export const animatedAsset = defineType({
   name: "animatedAsset",
@@ -25,6 +26,7 @@ export const animatedAsset = defineType({
       description: "Upload a Lottie JSON file (.json).",
       options: { accept: ".json" },
       validation: (Rule) => Rule.required(),
+      components: { input: LottieFilePreview },
     }),
     defineField({
       name: "autoplay",

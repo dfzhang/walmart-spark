@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { AnimatedMediaPreview } from "../../components/AnimatedMediaPreview";
 
 /**
  * Portable Text block type for embedding animated assets in article body.
@@ -35,13 +36,18 @@ export const animatedMedia = defineType({
     select: {
       assetTitle: "animation.title",
       caption: "caption",
+      animationFileRef: "animation.lottieFile.asset._ref",
     },
-    prepare({ assetTitle, caption }) {
+    prepare({ assetTitle, caption, animationFileRef }) {
       return {
         title: caption || assetTitle || "Lottie Animation",
         subtitle: caption ? assetTitle : undefined,
         media: () => "🎬",
+        animationFileRef,
       };
     },
+  },
+  components: {
+    preview: AnimatedMediaPreview,
   },
 });
