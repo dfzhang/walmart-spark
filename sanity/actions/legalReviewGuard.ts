@@ -134,6 +134,8 @@ function createLegalGuardedAction(
   };
 
   GuardedAction.displayName = `LegalGuard(${originalAction.displayName || originalAction.name || "Action"})`;
+  // Preserve static properties (e.g. .action = "publish") through the wrapping chain
+  (GuardedAction as any).action = (originalAction as any).action;
 
   return GuardedAction;
 }

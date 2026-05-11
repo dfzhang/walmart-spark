@@ -389,6 +389,8 @@ function createStyleGuardedPublish(
   };
 
   GuardedPublish.displayName = `StyleGuideGuard(${originalAction.displayName || originalAction.name || "Publish"})`;
+  // Preserve static properties (e.g. .action = "publish") through the wrapping chain
+  (GuardedPublish as any).action = (originalAction as any).action;
 
   return GuardedPublish;
 }
