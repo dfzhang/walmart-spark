@@ -27,6 +27,20 @@ export const animatedAsset = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "autoplay",
+      type: "boolean",
+      title: "Autoplay",
+      description: "Start playing automatically when visible.",
+      initialValue: true,
+    }),
+    defineField({
+      name: "loop",
+      type: "boolean",
+      title: "Loop",
+      description: "Repeat the animation continuously.",
+      initialValue: true,
+    }),
+    defineField({
       name: "altText",
       type: "string",
       title: "Alt Text",
