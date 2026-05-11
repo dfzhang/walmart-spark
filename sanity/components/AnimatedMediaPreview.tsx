@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { type PreviewProps, useClient } from "sanity";
-import Lottie from "lottie-react";
+
+// Lazy-load lottie-react so it's never evaluated during `sanity deploy`
+// (lottie-web accesses HTMLCanvasElement.getContext which doesn't exist in Node)
+const Lottie = lazy(() => import("lottie-react"));
 
 /**
  * Custom preview component for the `animatedMedia` PT block.
@@ -12,6 +15,10 @@ export function AnimatedMediaPreview(props: PreviewProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Lottie JSON is untyped
   const [animationData, setAnimationData] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Only render Lottie in the browser — skip during SSR/build
+  useEffect(() => setIsClient(true), []);
 
   // The animation ref ID comes through the preview select mapping
   const assetFileRef = (props as PreviewProps & { animationFileRef?: string })
@@ -69,13 +76,21 @@ export function AnimatedMediaPreview(props: PreviewProps) {
           justifyContent: "center",
         }}
       >
-        {animationData ? (
-          <Lottie
-            animationData={animationData}
-            loop
-            autoplay
-            style={{ width: 60, height: 60 }}
-          />
+        {isClient && animationData ? (
+          <Suspense
+            fallback={
+              <span style={{ fontSize: 11, color: "#9CA3AF" }} role="status">
+                …
+              </span>
+            }
+          >
+            <Lottie
+              animationData={animationData}
+              loop
+              autoplay
+              style={{ width: 60, height: 60 }}
+            />
+          </Suspense>
         ) : error ? (
           <span style={{ fontSize: 11, color: "#9CA3AF" }}>⚠️</span>
         ) : assetFileRef ? (

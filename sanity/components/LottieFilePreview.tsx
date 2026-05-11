@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { type ObjectInputProps, useClient } from "sanity";
-import Lottie from "lottie-react";
 import type { LottieRefCurrentProps } from "lottie-react";
+
+// Lazy-load lottie-react so it's never evaluated during `sanity deploy`
+// (lottie-web accesses HTMLCanvasElement.getContext which doesn't exist in Node)
+const Lottie = lazy(() => import("lottie-react"));
 
 /**
  * Custom input component for the `lottieFile` field on `animatedAsset`.
@@ -14,7 +17,11 @@ export function LottieFilePreview(props: ObjectInputProps) {
   const [animationData, setAnimationData] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const lottieRef = useRef<LottieRefCurrentProps>(null);
+
+  // Only render Lottie in the browser — skip during SSR/build
+  useEffect(() => setIsClient(true), []);
 
   // Extract the file asset reference from the field value
   const fileValue = props.value as
@@ -96,65 +103,81 @@ export function LottieFilePreview(props: ObjectInputProps) {
         </div>
       )}
 
-      {animationData && (
-        <div
-          style={{
-            marginTop: 12,
-            border: "1px solid #E5E7EB",
-            borderRadius: 8,
-            overflow: "hidden",
-            background: "#F9FAFB",
-          }}
+      {isClient && animationData && (
+        <Suspense
+          fallback={
+            <div
+              style={{
+                marginTop: 12,
+                padding: 24,
+                textAlign: "center",
+                color: "#6B7280",
+                fontSize: 13,
+              }}
+            >
+              Loading preview…
+            </div>
+          }
         >
           <div
             style={{
-              maxWidth: 400,
-              margin: "0 auto",
-              padding: 16,
+              marginTop: 12,
+              border: "1px solid #E5E7EB",
+              borderRadius: 8,
+              overflow: "hidden",
+              background: "#F9FAFB",
             }}
           >
-            <Lottie
-              lottieRef={lottieRef}
-              animationData={animationData}
-              loop
-              autoplay
-              style={{ width: "100%", height: "auto" }}
-            />
-          </div>
-
-          {/* Controls bar */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-              padding: "8px 16px",
-              borderTop: "1px solid #E5E7EB",
-              background: "#FFFFFF",
-            }}
-          >
-            <button
-              type="button"
-              onClick={togglePlayback}
+            <div
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "6px 14px",
-                fontSize: 13,
-                fontWeight: 500,
-                border: "1px solid #D1D5DB",
-                borderRadius: 6,
-                background: "#FFFFFF",
-                cursor: "pointer",
-                color: "#374151",
+                maxWidth: 400,
+                margin: "0 auto",
+                padding: 16,
               }}
             >
-              {isPlaying ? "⏸ Pause" : "▶️ Play"}
-            </button>
+              <Lottie
+                lottieRef={lottieRef}
+                animationData={animationData}
+                loop
+                autoplay
+                style={{ width: "100%", height: "auto" }}
+              />
+            </div>
+
+            {/* Controls bar */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                padding: "8px 16px",
+                borderTop: "1px solid #E5E7EB",
+                background: "#FFFFFF",
+              }}
+            >
+              <button
+                type="button"
+                onClick={togglePlayback}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 14px",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  border: "1px solid #D1D5DB",
+                  borderRadius: 6,
+                  background: "#FFFFFF",
+                  cursor: "pointer",
+                  color: "#374151",
+                }}
+              >
+                {isPlaying ? "⏸ Pause" : "▶️ Play"}
+              </button>
+            </div>
           </div>
-        </div>
+        </Suspense>
       )}
     </div>
   );
