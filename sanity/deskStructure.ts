@@ -176,6 +176,21 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
 
       S.divider(),
 
+      // ── Style Guide ─────────────────────────────────────────
+      S.listItem()
+        .title("📖 Style Guide")
+        .icon(() => "📖")
+        .child(
+          S.documentTypeList("glossaryTerm")
+            .title("Style Guide — Banned Terms")
+            .defaultOrdering([
+              { field: "severity", direction: "asc" },
+              { field: "bannedTerm", direction: "asc" },
+            ])
+        ),
+
+      S.divider(),
+
       // ── Settings (singleton) ─────────────────────────────────
       S.listItem()
         .title("Settings")

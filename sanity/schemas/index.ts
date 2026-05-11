@@ -3,6 +3,7 @@ import { category } from "./category";
 import { article } from "./article";
 import { faq } from "./faq";
 import { faqCollection } from "./faqCollection";
+import { glossaryTerm } from "./glossaryTerm";
 import { helpCenterSettings } from "./helpCenterSettings";
 import { seo } from "./objects/seo";
 import { callout } from "./objects/callout";
@@ -17,6 +18,7 @@ export const schemaTypes = [
   article,
   faq,
   faqCollection,
+  glossaryTerm,
   helpCenterSettings,
 
   // Object types (used inside documents)
