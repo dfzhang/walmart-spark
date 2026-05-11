@@ -9,6 +9,7 @@ import { schemaTypes } from "./sanity/schemas";
 import { structure, newDocumentOptions } from "./sanity/deskStructure";
 import { resolve } from "./sanity/presentation/resolve";
 import { legalReviewActions } from "./sanity/actions/legalReviewGuard";
+import { withStyleGuideGuard } from "./sanity/actions/styleGuideGuard";
 import { disableWorkflowDrag } from "./sanity/plugins/disableWorkflowDrag";
 
 /** Supported languages — English (default) + Spanish */
@@ -96,6 +97,9 @@ export default defineConfig({
   },
 
   document: {
-    actions: legalReviewActions,
+    actions: (prev, context) => {
+      const withLegalGuard = legalReviewActions(prev, context);
+      return withStyleGuideGuard(withLegalGuard, context);
+    },
   },
 });
