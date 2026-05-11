@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import { FaqAccordion } from "./faq-accordion";
+import { LottiePlayer } from "./lottie-player";
 import { urlForImage } from "@/lib/sanity";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -77,6 +78,32 @@ function buildComponents(locale: Locale, headingIds: Record<string, string>) {
         const items = value.collection?.items;
         if (!items || items.length === 0) return null;
         return <FaqAccordion items={items} />;
+      },
+      animatedMedia: ({
+        value,
+      }: {
+        value: {
+          animation?: {
+            title?: string;
+            lottieFile?: { asset?: { url?: string } };
+            autoplay?: boolean;
+            loop?: boolean;
+          };
+          caption?: string;
+          altText?: string;
+        };
+      }) => {
+        const url = value.animation?.lottieFile?.asset?.url;
+        if (!url) return null;
+        return (
+          <LottiePlayer
+            src={url}
+            altText={value.altText || value.animation?.title || "Animation"}
+            caption={value.caption}
+            autoplay={value.animation?.autoplay ?? true}
+            loop={value.animation?.loop ?? true}
+          />
+        );
       },
       codeBlock: ({ value }: { value: { language?: string; code: string } }) => {
         const lang = value.language || "text";

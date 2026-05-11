@@ -95,5 +95,13 @@ export const resolve: PresentationPluginOptions["resolve"] = {
         locations: [{ title: doc?.title || "FAQ Collection", href: "/" }],
       }),
     }),
+
+    // Animated assets appear embedded in articles — link to home as fallback
+    animatedAsset: defineLocations({
+      select: { title: "title" },
+      resolve: (doc) => ({
+        locations: [{ title: doc?.title || "Animated Asset", href: "/" }],
+      }),
+    }),
   },
 };

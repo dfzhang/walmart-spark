@@ -174,6 +174,15 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
             .filter(`_type == "banner" && (!defined(language) || language == "en")`)
         ),
 
+      // ── Animated Assets ────────────────────────────────────────
+      S.listItem()
+        .title("Animated Assets")
+        .icon(() => "🎬")
+        .child(
+          S.documentTypeList("animatedAsset")
+            .title("Animated Assets")
+        ),
+
       S.divider(),
 
       // ── Style Guide ─────────────────────────────────────────

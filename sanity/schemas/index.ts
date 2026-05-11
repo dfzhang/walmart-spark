@@ -1,3 +1,4 @@
+import { animatedAsset } from "./animatedAsset";
 import { banner } from "./banner";
 import { category } from "./category";
 import { article } from "./article";
@@ -6,6 +7,7 @@ import { faqCollection } from "./faqCollection";
 import { glossaryTerm } from "./glossaryTerm";
 import { helpCenterSettings } from "./helpCenterSettings";
 import { seo } from "./objects/seo";
+import { animatedMedia } from "./objects/animatedMedia";
 import { callout } from "./objects/callout";
 import { faqSection } from "./objects/faqSection";
 import { faqCollectionRef } from "./objects/faqCollectionRef";
@@ -13,6 +15,7 @@ import { codeBlock } from "./objects/codeBlock";
 
 export const schemaTypes = [
   // Document types
+  animatedAsset,
   banner,
   category,
   article,
@@ -23,6 +26,7 @@ export const schemaTypes = [
 
   // Object types (used inside documents)
   seo,
+  animatedMedia,
   callout,
   faqSection,
   faqCollectionRef,
