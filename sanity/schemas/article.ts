@@ -139,6 +139,7 @@ export const article = defineType({
           ],
         }),
         // Custom block types
+        defineArrayMember({ type: "animatedMedia" }),
         defineArrayMember({ type: "callout" }),
         defineArrayMember({ type: "faqSection" }),
         defineArrayMember({ type: "faqCollectionRef" }),
