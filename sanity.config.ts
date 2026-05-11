@@ -12,6 +12,7 @@ import { legalReviewActions } from "./sanity/actions/legalReviewGuard";
 import { withStyleGuideGuard } from "./sanity/actions/styleGuideGuard";
 import { disableWorkflowDrag } from "./sanity/plugins/disableWorkflowDrag";
 
+
 /** Supported languages — English (default) + Spanish */
 export const i18n = {
   languages: [
