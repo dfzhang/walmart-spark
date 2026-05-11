@@ -43,6 +43,11 @@ export const articleBySlugQuery = (locale: Locale) =>
     _type == "faqCollectionRef" => {
       _type, _key,
       collection->{ title, items[]->{ question, answer } }
+    },
+    _type == "animatedMedia" => {
+      _type, _key, caption,
+      "altText": coalesce(altText, animation->altText),
+      animation->{ title, lottieFile{ asset->{ url } }, autoplay, loop }
     }
   },
   "category": category->{_id, title, slug},
