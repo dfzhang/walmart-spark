@@ -5,7 +5,5 @@ export default defineCliConfig({
     organizationId: "oKQf3hPlq",
     entry: "./src/App.tsx",
   },
-  deployment: {
-    appId: "legal-review-app",
-  },
 });
+
