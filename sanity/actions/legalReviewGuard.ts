@@ -20,6 +20,10 @@
  * Non-article types pass through unchanged.
  *
  * States define topology. This guard defines policy.
+ *
+ * Approval logging: When a legal reviewer approves or requests changes
+ * from the pendingLegalReview state, an entry is appended to the
+ * article's `approvalLog` array before the workflow transition fires.
  */
 import {
   type DocumentActionComponent,
@@ -29,10 +33,19 @@ import {
   useCurrentUser,
   getPublishedId,
 } from "sanity";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const API_VERSION = "2024-01-01";
 const LEGAL_ROLES = ["legal", "administrator"];
+const LOGGED_ACTIONS = ["Approved", "Changes Requested"] as const;
+
+type LoggedActionLabel = (typeof LOGGED_ACTIONS)[number];
+
+function actionLabelToLogAction(
+  label: LoggedActionLabel,
+): "approved" | "changesRequested" {
+  return label === "Approved" ? "approved" : "changesRequested";
+}
 
 /**
  * Hook to read the current workflow state for a document.
@@ -75,7 +88,8 @@ function useWorkflowState(documentId: string): string | null {
 
 /**
  * Wraps a single workflow action component. Conditionally hides
- * transitions based on the full policy matrix.
+ * transitions based on the full policy matrix, and intercepts
+ * onHandle to append approval log entries for legal actions.
  */
 function createLegalGuardedAction(
   originalAction: DocumentActionComponent,
@@ -86,19 +100,65 @@ function createLegalGuardedAction(
     const result = originalAction(props);
     const workflowState = useWorkflowState(props.id);
     const currentUser = useCurrentUser();
+    const client = useClient({ apiVersion: API_VERSION });
+
+    const appendApprovalLog = useCallback(
+      async (label: LoggedActionLabel) => {
+        const doc = props.draft || props.published;
+        const publishedId = getPublishedId(props.id);
+        const entry = {
+          _key: crypto.randomUUID(),
+          stage: "legal",
+          action: actionLabelToLogAction(label),
+          userId: currentUser?.id ?? "unknown",
+          userName: currentUser?.name ?? "Unknown User",
+          timestamp: new Date().toISOString(),
+          comment: "",
+          documentRevision: (doc as any)?._rev ?? "",
+        };
+
+        await client
+          .patch(publishedId)
+          .setIfMissing({ approvalLog: [] })
+          .append("approvalLog", [entry])
+          .commit();
+      },
+      [client, props.id, props.draft, props.published, currentUser],
+    );
 
     // Action returned null — pass through
     if (!result) return null;
 
     // Only filter workflow transition actions
     const label = result.label;
-    if (label !== "Approved" && label !== "Pending Legal Review") return result;
+    if (label !== "Approved" && label !== "Pending Legal Review" && label !== "Changes Requested") {
+      return result;
+    }
 
     // Read legalReviewNeeded from the document
     const doc = (props.draft || props.published) as
       | { legalReviewNeeded?: boolean }
       | undefined;
     const needsLegal = doc?.legalReviewNeeded === true;
+
+    /**
+     * Wraps onHandle to append an approval log entry before the
+     * original workflow transition fires. Only applied to "Approved"
+     * and "Changes Requested" actions in the pendingLegalReview state.
+     */
+    function withApprovalLog(
+      action: DocumentActionDescription,
+      actionLabel: LoggedActionLabel,
+    ): DocumentActionDescription {
+      const originalOnHandle = action.onHandle;
+      return {
+        ...action,
+        onHandle: async () => {
+          await appendApprovalLog(actionLabel);
+          originalOnHandle?.();
+        },
+      };
+    }
 
     if (!needsLegal) {
       // Case 4: Normal articles — hide "Pending Legal Review", show "Approved"
@@ -110,6 +170,11 @@ function createLegalGuardedAction(
     if (workflowState === "pendingLegalReview") {
       // Cases 2 & 3: Document is in legal review
       if (label === "Pending Legal Review") return null;
+
+      if (label === "Changes Requested") {
+        // Log changes-requested from any user in PLR state
+        return withApprovalLog(result, "Changes Requested");
+      }
 
       // "Approved" — only legal/admin can approve
       const userRoles = currentUser?.roles?.map((r) => r.name) ?? [];
@@ -124,8 +189,8 @@ function createLegalGuardedAction(
             'Only users with the "legal" or "administrator" role can approve articles requiring legal review.',
         };
       }
-      // Case 2: Legal user — show "Approved"
-      return result;
+      // Case 2: Legal user — log and approve
+      return withApprovalLog(result, "Approved");
     } else {
       // Case 1: Not yet in legal review — hide "Approved", show "Pending Legal Review"
       if (label === "Approved") return null;
