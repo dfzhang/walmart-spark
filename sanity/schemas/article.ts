@@ -232,6 +232,13 @@ export const article = defineType({
               type: "string",
               title: "Document Revision",
             }),
+            defineField({
+              name: "documentId",
+              type: "string",
+              title: "Document ID",
+              description:
+                "The _id (may be drafts.xxx) of the document at the time of this action. Used to fetch the correct revision from the History API.",
+            }),
           ],
         }),
       ],

@@ -24,6 +24,9 @@ export interface ApprovalLogEntry {
   timestamp: string;
   comment?: string;
   documentRevision: string;
+  /** The _id (may be "drafts.xxx") at the time of this action.
+   *  Used to query the correct History API endpoint. */
+  documentId?: string;
 }
 
 /** Article document (partial — fields we need) */

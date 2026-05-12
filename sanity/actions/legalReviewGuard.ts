@@ -115,6 +115,7 @@ function createLegalGuardedAction(
           timestamp: new Date().toISOString(),
           comment: "",
           documentRevision: (doc as any)?._rev ?? "",
+          documentId: (doc as any)?._id ?? publishedId,
         };
 
         await client

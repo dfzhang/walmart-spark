@@ -82,8 +82,12 @@ export function ReviewView({
     setDiffLoading(true);
     setDiffError(null);
 
+    // Use the exact _id stored at approval time (may be "drafts.xxx").
+    // Fall back to bare documentId for log entries created before this fix.
+    const historyDocId = lastApproval.documentId ?? documentId;
+
     fetchDocumentAtRevision<ArticleDocument>(
-      documentId,
+      historyDocId,
       lastApproval.documentRevision,
       { token }
     )
@@ -124,6 +128,7 @@ export function ReviewView({
         timestamp: new Date().toISOString(),
         comment: comment || undefined,
         documentRevision: article._rev,
+        documentId: article._id,
       };
 
       await mutate(
@@ -180,6 +185,7 @@ export function ReviewView({
         timestamp: new Date().toISOString(),
         comment: comment,
         documentRevision: article._rev,
+        documentId: article._id,
       };
 
       await mutate(
