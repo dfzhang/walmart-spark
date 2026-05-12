@@ -71,12 +71,10 @@ export async function fetchDocumentAtRevision<T = unknown>(
     );
   }
 
-  // History API returns NDJSON — one document per line
-  const text = await res.text();
-  const firstLine = text.trim().split("\n")[0];
-  if (!firstLine) return null;
-
-  return JSON.parse(firstLine) as T;
+  // History API returns {"documents": [...]} JSON wrapper
+  const json = await res.json();
+  const docs = json.documents ?? [];
+  return docs.length > 0 ? (docs[0] as T) : null;
 }
 
 /**
