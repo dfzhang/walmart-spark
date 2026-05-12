@@ -187,62 +187,6 @@ export const article = defineType({
       group: "metadata",
       initialValue: false,
     }),
-    defineField({
-      name: "approvalLog",
-      type: "array",
-      title: "Approval Log",
-      group: "metadata",
-      hidden: true,
-      of: [
-        defineArrayMember({
-          type: "object",
-          fields: [
-            defineField({
-              name: "stage",
-              type: "string",
-              title: "Stage",
-            }),
-            defineField({
-              name: "action",
-              type: "string",
-              title: "Action",
-            }),
-            defineField({
-              name: "userId",
-              type: "string",
-              title: "User ID",
-            }),
-            defineField({
-              name: "userName",
-              type: "string",
-              title: "User Name",
-            }),
-            defineField({
-              name: "timestamp",
-              type: "datetime",
-              title: "Timestamp",
-            }),
-            defineField({
-              name: "comment",
-              type: "text",
-              title: "Comment",
-            }),
-            defineField({
-              name: "documentRevision",
-              type: "string",
-              title: "Document Revision",
-            }),
-            defineField({
-              name: "documentId",
-              type: "string",
-              title: "Document ID",
-              description:
-                "The _id (may be drafts.xxx) of the document at the time of this action. Used to fetch the correct revision from the History API.",
-            }),
-          ],
-        }),
-      ],
-    }),
     orderRankField({ type: "article" }),
 
     // ── SEO group ──────────────────────────────────────────────

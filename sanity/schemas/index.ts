@@ -1,4 +1,5 @@
 import { animatedAsset } from "./animatedAsset";
+import { approvalLog } from "./approvalLog";
 import { banner } from "./banner";
 import { category } from "./category";
 import { article } from "./article";
@@ -16,6 +17,7 @@ import { codeBlock } from "./objects/codeBlock";
 export const schemaTypes = [
   // Document types
   animatedAsset,
+  approvalLog,
   banner,
   category,
   article,

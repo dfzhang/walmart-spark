@@ -34,7 +34,7 @@ const QUEUE_QUERY = `{
  */
 const ARTICLES_QUERY = `*[_type == "article" && _id in $ids] {
   _id, title, "slug": slug.current, _updatedAt,
-  "lastApproval": approvalLog[action == "approved"] | order(timestamp desc) [0]
+  "lastApproval": *[_id == "approval-log." + ^._id][0].entries[action == "approved"] | order(timestamp desc) [0]
 }`;
 
 interface QueueData {
