@@ -58,6 +58,7 @@ export function ReviewView({
 
   // Compute diff when article loads
   useEffect(() => {
+    console.log('[DEBUG]', { hasBody: !!article?.body, token: token ? 'YES' : 'NO', approvalLog: article?.approvalLog }); // ← ADD THIS AS FIRST LINE
     if (!article?.body || !token) return;
 
     const lastApproval = article.approvalLog
@@ -95,6 +96,7 @@ export function ReviewView({
         if (cancelled) return;
         const oldBody = oldDoc?.body ?? [];
         const newBody = article.body ?? [];
+        console.log('[Diff]', { oldDoc: !!oldDoc, oldBodyLen: oldBody.length, newBodyLen: newBody.length });
         setDiffs(diffPortableText(oldBody, newBody));
       })
       .catch((err) => {
