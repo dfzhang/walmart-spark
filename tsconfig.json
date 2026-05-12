@@ -37,6 +37,7 @@
   ],
   "exclude": [
     "node_modules",
-    "sanity"
+    "sanity",
+    "legal-review-app"
   ]
 }
