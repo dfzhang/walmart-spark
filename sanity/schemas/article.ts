@@ -6,6 +6,7 @@ import {
 import { languageField } from "./fields/language";
 import { isUniquePerLanguage } from "./fields/isUniquePerLanguage";
 import { styleGuideRules } from "../validation/styleGuideValidation";
+import { ApprovalHistoryInput } from "../components/ApprovalHistoryInput";
 
 export const article = defineType({
   name: "article",
@@ -186,6 +187,14 @@ export const article = defineType({
         "When enabled, this article requires legal approval before publishing.",
       group: "metadata",
       initialValue: false,
+    }),
+    defineField({
+      name: "approvalHistory",
+      title: "Review History",
+      type: "string",
+      group: "metadata",
+      components: { input: ApprovalHistoryInput },
+      readOnly: true,
     }),
     orderRankField({ type: "article" }),
 
