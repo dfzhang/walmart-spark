@@ -22,8 +22,10 @@
  * States define topology. This guard defines policy.
  *
  * Approval logging: When a legal reviewer approves or requests changes
- * from the pendingLegalReview state, an entry is appended to the
- * article's `approvalLog` array before the workflow transition fires.
+ * from the pendingLegalReview state, an entry is appended to a
+ * separate `approval-log.{publishedId}` document before the workflow
+ * transition fires. This survives publish cycles (unlike fields on
+ * the article itself, which get overwritten).
  */
 import {
   type DocumentActionComponent,
@@ -106,6 +108,7 @@ function createLegalGuardedAction(
       async (label: LoggedActionLabel) => {
         const doc = props.draft || props.published;
         const publishedId = getPublishedId(props.id);
+        const logDocId = `approval-log.${publishedId}`;
         const entry = {
           _key: crypto.randomUUID(),
           stage: "legal",
@@ -119,9 +122,13 @@ function createLegalGuardedAction(
         };
 
         await client
-          .patch(publishedId)
-          .setIfMissing({ approvalLog: [] })
-          .append("approvalLog", [entry])
+          .transaction()
+          .createIfNotExists({
+            _id: logDocId,
+            _type: "approvalLog",
+            entries: [],
+          })
+          .patch(logDocId, (p) => p.append("entries", [entry]))
           .commit();
       },
       [client, props.id, props.draft, props.published, currentUser],

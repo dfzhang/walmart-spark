@@ -221,6 +221,7 @@ export const structure = (S: StructureBuilder, context: ConfigContext) =>
 export const newDocumentOptions = (prev: Template[]) =>
   prev.filter(
     (template) =>
+      template.id !== "approvalLog" &&
       template.id !== "helpCenterSettings" &&
       template.id !== "translation.metadata"
   );
