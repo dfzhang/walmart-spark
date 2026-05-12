@@ -1,14 +1,10 @@
-import { useQuery } from "@sanity/sdk-react";
+import { useQuery, useAuthToken, useCurrentUser } from "@sanity/sdk-react";
 import { useState, useEffect, useCallback } from "react";
 import { TrackChanges } from "./TrackChanges";
 import { ApprovalHistory } from "./ApprovalHistory";
 import { ExportButton } from "./ExportButton";
 import { diffPortableText, diffStats } from "../lib/diff-engine";
-import {
-  fetchDocumentAtRevision,
-  mutate,
-  groqQuery,
-} from "../lib/sanity-client";
+import { fetchDocumentAtRevision, mutate } from "../lib/sanity-client";
 import type {
   ArticleDocument,
   ApprovalLogEntry,
@@ -22,8 +18,10 @@ interface ReviewViewProps {
   onBack: () => void;
 }
 
-/** Fetch the current article with its approval log */
-const ARTICLE_QUERY = `*[_id == $id || _id == "drafts." + $id] | order(_id asc) [0] {
+/** Fetch the draft article (pending changes) with its approval log.
+ *  order(_id desc) ensures "drafts.xxx" sorts before "xxx",
+ *  so the reviewer always sees the unpublished draft. */
+const ARTICLE_QUERY = `*[_id == $id || _id == "drafts." + $id] | order(_id desc) [0] {
   _id, _rev, _type, _updatedAt, _createdAt,
   title, slug, excerpt, body, approvalLog, legalReviewNeeded
 }`;
@@ -38,6 +36,9 @@ export function ReviewView({
   documentType,
   onBack,
 }: ReviewViewProps) {
+  const token = useAuthToken();
+  const currentUser = useCurrentUser();
+
   const { data: article } = useQuery<ArticleDocument | null>({
     query: ARTICLE_QUERY,
     params: { id: documentId },
@@ -57,7 +58,7 @@ export function ReviewView({
 
   // Compute diff when article loads
   useEffect(() => {
-    if (!article?.body) return;
+    if (!article?.body || !token) return;
 
     const lastApproval = article.approvalLog
       ?.filter((e) => e.action === "approved")
@@ -83,7 +84,8 @@ export function ReviewView({
 
     fetchDocumentAtRevision<ArticleDocument>(
       documentId,
-      lastApproval.documentRevision
+      lastApproval.documentRevision,
+      { token }
     )
       .then((oldDoc) => {
         if (cancelled) return;
@@ -104,50 +106,47 @@ export function ReviewView({
     return () => {
       cancelled = true;
     };
-  }, [article, documentId]);
+  }, [article, documentId, token]);
 
   const handleApprove = useCallback(async () => {
-    if (!article) return;
+    if (!article || !token) return;
     setActionLoading(true);
     setActionMessage(null);
 
     try {
-      // Get current user info from the SDK app session
-      const currentUser = await groqQuery<{ id: string; name: string }>(
-        `*[_type == "system.user" && _id == $userId][0]{ "id": _id, "name": name }`,
-        {}
-      ).catch(() => ({ id: "unknown", name: "Legal Reviewer" }));
-
       const metadataId = `workflow-metadata.${documentId}`;
       const logEntry: Omit<ApprovalLogEntry, "_key"> & { _key: string } = {
         _key: crypto.randomUUID().slice(0, 8),
         stage: "legal",
         action: "approved",
-        userId: currentUser.id,
-        userName: currentUser.name,
+        userId: currentUser?.id ?? "unknown",
+        userName: currentUser?.name ?? "Legal Reviewer",
         timestamp: new Date().toISOString(),
         comment: comment || undefined,
         documentRevision: article._rev,
       };
 
-      await mutate([
-        {
-          patch: {
-            id: metadataId,
-            set: { state: "approved" },
-          },
-        },
-        {
-          patch: {
-            id: article._id,
-            setIfMissing: { approvalLog: [] },
-            insert: {
-              after: "approvalLog[-1]",
-              items: [logEntry],
+      await mutate(
+        [
+          {
+            patch: {
+              id: metadataId,
+              set: { state: "approved" },
             },
           },
-        },
-      ]);
+          {
+            patch: {
+              id: article._id,
+              setIfMissing: { approvalLog: [] },
+              insert: {
+                after: "approvalLog[-1]",
+                items: [logEntry],
+              },
+            },
+          },
+        ],
+        { token }
+      );
 
       setActionMessage("✅ Document approved successfully.");
       setComment("");
@@ -158,52 +157,52 @@ export function ReviewView({
     } finally {
       setActionLoading(false);
     }
-  }, [article, documentId, comment]);
+  }, [article, documentId, comment, token, currentUser]);
 
   const handleRequestChanges = useCallback(async () => {
-    if (!article || !comment.trim()) {
-      setActionMessage("❌ Please provide a comment explaining the requested changes.");
+    if (!article || !token || !comment.trim()) {
+      if (!comment.trim()) {
+        setActionMessage("❌ Please provide a comment explaining the requested changes.");
+      }
       return;
     }
     setActionLoading(true);
     setActionMessage(null);
 
     try {
-      const currentUser = await groqQuery<{ id: string; name: string }>(
-        `*[_type == "system.user" && _id == $userId][0]{ "id": _id, "name": name }`,
-        {}
-      ).catch(() => ({ id: "unknown", name: "Legal Reviewer" }));
-
       const metadataId = `workflow-metadata.${documentId}`;
       const logEntry: Omit<ApprovalLogEntry, "_key"> & { _key: string } = {
         _key: crypto.randomUUID().slice(0, 8),
         stage: "legal",
         action: "changesRequested",
-        userId: currentUser.id,
-        userName: currentUser.name,
+        userId: currentUser?.id ?? "unknown",
+        userName: currentUser?.name ?? "Legal Reviewer",
         timestamp: new Date().toISOString(),
         comment: comment,
         documentRevision: article._rev,
       };
 
-      await mutate([
-        {
-          patch: {
-            id: metadataId,
-            set: { state: "changesRequested" },
-          },
-        },
-        {
-          patch: {
-            id: article._id,
-            setIfMissing: { approvalLog: [] },
-            insert: {
-              after: "approvalLog[-1]",
-              items: [logEntry],
+      await mutate(
+        [
+          {
+            patch: {
+              id: metadataId,
+              set: { state: "changesRequested" },
             },
           },
-        },
-      ]);
+          {
+            patch: {
+              id: article._id,
+              setIfMissing: { approvalLog: [] },
+              insert: {
+                after: "approvalLog[-1]",
+                items: [logEntry],
+              },
+            },
+          },
+        ],
+        { token }
+      );
 
       setActionMessage("✅ Changes requested. Document returned to author.");
       setComment("");
@@ -214,7 +213,7 @@ export function ReviewView({
     } finally {
       setActionLoading(false);
     }
-  }, [article, documentId, comment]);
+  }, [article, documentId, comment, token, currentUser]);
 
   if (!article) {
     return (

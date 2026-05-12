@@ -6,12 +6,16 @@ import { PROJECT_ID, DATASET, API_VERSION } from "./constants";
  *
  * For most reads, prefer SDK hooks (useDocuments, useQuery).
  * This is for History API + complex mutations.
+ *
+ * IMPORTANT: All functions require an auth token. In the SDK App context,
+ * get this from useAuthToken() and pass it explicitly.
  */
 
 const BASE_URL = `https://${PROJECT_ID}.api.sanity.io/v${API_VERSION}`;
 
 interface FetchOptions {
-  token?: string;
+  /** Auth token from useAuthToken() — required for all API calls */
+  token: string;
   signal?: AbortSignal;
 }
 
@@ -23,7 +27,7 @@ interface FetchOptions {
 export async function groqQuery<T = unknown>(
   query: string,
   params: Record<string, unknown> = {},
-  options: FetchOptions = {}
+  options: FetchOptions
 ): Promise<T> {
   const url = new URL(`${BASE_URL}/data/query/${DATASET}`);
   url.searchParams.set("query", query);
@@ -31,13 +35,8 @@ export async function groqQuery<T = unknown>(
     url.searchParams.set(`$${key}`, JSON.stringify(value));
   }
 
-  const headers: Record<string, string> = {};
-  if (options.token) {
-    headers["Authorization"] = `Bearer ${options.token}`;
-  }
-
   const res = await fetch(url.toString(), {
-    headers,
+    headers: { Authorization: `Bearer ${options.token}` },
     signal: options.signal,
   });
 
@@ -56,16 +55,14 @@ export async function groqQuery<T = unknown>(
 export async function fetchDocumentAtRevision<T = unknown>(
   documentId: string,
   revision: string,
-  options: FetchOptions = {}
+  options: FetchOptions
 ): Promise<T | null> {
   const url = `${BASE_URL}/data/history/${DATASET}/documents/${documentId}?revision=${revision}`;
 
-  const headers: Record<string, string> = {};
-  if (options.token) {
-    headers["Authorization"] = `Bearer ${options.token}`;
-  }
-
-  const res = await fetch(url, { headers, signal: options.signal });
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${options.token}` },
+    signal: options.signal,
+  });
 
   if (!res.ok) {
     if (res.status === 404) return null;
@@ -95,19 +92,17 @@ export interface Transaction {
 
 export async function fetchTransactions(
   documentId: string,
-  options: FetchOptions & { since?: string } = {}
+  options: FetchOptions & { since?: string }
 ): Promise<Transaction[]> {
   let url = `${BASE_URL}/data/history/${DATASET}/transactions/${documentId}`;
   if (options.since) {
     url += `?fromTransaction=${options.since}`;
   }
 
-  const headers: Record<string, string> = {};
-  if (options.token) {
-    headers["Authorization"] = `Bearer ${options.token}`;
-  }
-
-  const res = await fetch(url, { headers, signal: options.signal });
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${options.token}` },
+    signal: options.signal,
+  });
 
   if (!res.ok) {
     throw new Error(
@@ -130,20 +125,16 @@ export async function fetchTransactions(
  */
 export async function mutate(
   mutations: Record<string, unknown>[],
-  options: FetchOptions = {}
+  options: FetchOptions
 ): Promise<void> {
   const url = `${BASE_URL}/data/mutate/${DATASET}`;
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (options.token) {
-    headers["Authorization"] = `Bearer ${options.token}`;
-  }
-
   const res = await fetch(url, {
     method: "POST",
-    headers,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${options.token}`,
+    },
     body: JSON.stringify({ mutations }),
     signal: options.signal,
   });
