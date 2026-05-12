@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "sanity app dev",
-    "build": "sanity app build",
+    "dev": "sanity dev --port 3334",
+    "build": "sanity build",
     "deploy": "sanity deploy"
   },
   "dependencies": {
