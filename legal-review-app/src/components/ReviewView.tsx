@@ -18,18 +18,13 @@ interface ReviewViewProps {
   onBack: () => void;
 }
 
-/** Fetch the draft article (pending changes) for content review.
+/** Fetch the draft article (pending changes) with its approval log.
  *  order(_id desc) ensures "drafts.xxx" sorts before "xxx",
- *  so the reviewer always sees the unpublished draft.
- *  approvalLog is fetched separately from the published doc. */
+ *  so the reviewer always sees the unpublished draft. */
 const ARTICLE_QUERY = `*[_id == $id || _id == "drafts." + $id] | order(_id desc) [0] {
   _id, _rev, _type, _updatedAt, _createdAt,
-  title, slug, excerpt, body, legalReviewNeeded
+  title, slug, excerpt, body, approvalLog, legalReviewNeeded
 }`;
-
-/** Fetch approval log from the published doc only.
- *  Approvals are patched to the published ID — drafts don't carry the log. */
-const APPROVAL_LOG_QUERY = `*[_id == $id][0]{ approvalLog }`;
 
 /** Fetch the workflow metadata for this document */
 const WORKFLOW_QUERY = `*[_id == "workflow-metadata." + $id][0] {
@@ -54,16 +49,6 @@ export function ReviewView({
     params: { id: documentId },
   });
 
-  // Approval log lives on the published doc — drafts don't carry it.
-  const publishedId = documentId.replace(/^drafts\./, "");
-  const { data: approvalLogData } = useQuery<{
-    approvalLog: ApprovalLogEntry[] | null;
-  } | null>({
-    query: APPROVAL_LOG_QUERY,
-    params: { id: publishedId },
-  });
-  const approvalLog = approvalLogData?.approvalLog ?? [];
-
   const [diffs, setDiffs] = useState<BlockDiff[] | null>(null);
   const [diffError, setDiffError] = useState<string | null>(null);
   const [diffLoading, setDiffLoading] = useState(false);
@@ -71,15 +56,13 @@ export function ReviewView({
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [comment, setComment] = useState("");
 
-  // Compute diff when article loads.
-  // Body comes from the draft (content being reviewed).
-  // Approval log comes from the published doc (where approvals are patched).
+  // Compute diff when article loads
   useEffect(() => {
-    console.log('[DEBUG]', { hasBody: !!article?.body, token: token ? 'YES' : 'NO', approvalLog: article?.approvalLog }); // ← ADD THIS AS FIRST LINE
+    
     if (!article?.body || !token) return;
 
-    const lastApproval = approvalLog
-      .filter((e) => e.action === "approved")
+    const lastApproval = article.approvalLog
+      ?.filter((e) => e.action === "approved")
       .sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -113,7 +96,6 @@ export function ReviewView({
         if (cancelled) return;
         const oldBody = oldDoc?.body ?? [];
         const newBody = article.body ?? [];
-        console.log('[Diff]', { oldDoc: !!oldDoc, oldBodyLen: oldBody.length, newBodyLen: newBody.length });
         setDiffs(diffPortableText(oldBody, newBody));
       })
       .catch((err) => {
@@ -129,7 +111,7 @@ export function ReviewView({
     return () => {
       cancelled = true;
     };
-  }, [article, approvalLog, documentId, token]);
+  }, [article, documentId, token]);
 
   const handleApprove = useCallback(async () => {
     if (!article || !token) return;
@@ -150,8 +132,6 @@ export function ReviewView({
         documentId: article._id,
       };
 
-      // Patch approvalLog on the published doc — not the draft.
-      // Drafts don't carry the log; the published doc is the source of truth.
       await mutate(
         [
           {
@@ -162,7 +142,7 @@ export function ReviewView({
           },
           {
             patch: {
-              id: publishedId,
+              id: article._id,
               setIfMissing: { approvalLog: [] },
               insert: {
                 after: "approvalLog[-1]",
@@ -209,7 +189,6 @@ export function ReviewView({
         documentId: article._id,
       };
 
-      // Patch approvalLog on the published doc — not the draft.
       await mutate(
         [
           {
@@ -220,7 +199,7 @@ export function ReviewView({
           },
           {
             patch: {
-              id: publishedId,
+              id: article._id,
               setIfMissing: { approvalLog: [] },
               insert: {
                 after: "approvalLog[-1]",
@@ -317,7 +296,7 @@ export function ReviewView({
       {/* Approval History */}
       <section className="review-section">
         <h3>Approval History</h3>
-        <ApprovalHistory entries={approvalLog} />
+        <ApprovalHistory entries={article.approvalLog ?? []} />
       </section>
 
       {/* Actions */}

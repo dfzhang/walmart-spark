@@ -74,7 +74,6 @@ export async function fetchDocumentAtRevision<T = unknown>(
   // History API returns {"documents": [...]} JSON wrapper
   const json = await res.json();
   const docs = json.documents ?? [];
-  console.log('[History API]', { url, status: res.status, docsReturned: docs.length, firstDoc: docs[0] });
   return docs.length > 0 ? (docs[0] as T) : null;
 }
 
