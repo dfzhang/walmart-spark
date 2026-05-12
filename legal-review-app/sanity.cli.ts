@@ -6,4 +6,3 @@ export default defineCliConfig({
     entry: "./src/App.tsx",
   },
 });
-
