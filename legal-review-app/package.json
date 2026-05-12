@@ -9,6 +9,7 @@
     "deploy": "sanity deploy"
   },
   "dependencies": {
+    "@sanity/cli": "^6.5.1",
     "@sanity/sdk": "latest",
     "@sanity/sdk-react": "latest",
     "diff": "^7.0.0",

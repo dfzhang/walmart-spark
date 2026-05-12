@@ -5,4 +5,7 @@ export default defineCliConfig({
     organizationId: "oKQf3hPlq", // Set during `sanity deploy`
     entry: "./src/App.tsx",
   },
+  deployment: {
+    appId: "legal-review-app",
+  },
 });
