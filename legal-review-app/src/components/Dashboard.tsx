@@ -11,17 +11,17 @@ interface DashboardProps {
  * Workflow plugin stores state in `workflow-metadata.{docId}` documents.
  */
 const QUEUE_QUERY = `{
-  "pending": *[_type == "workflow-metadata" && state == "pendingLegalReview"] {
+  "pending": *[_type == "workflow.metadata" && state == "pendingLegalReview"] {
     "documentId": string::split(_id, "workflow-metadata.")[1],
     state,
     _updatedAt
   },
-  "approved": *[_type == "workflow-metadata" && state == "approved"] | order(_updatedAt desc) [0...10] {
+  "approved": *[_type == "workflow.metadata" && state == "approved"] | order(_updatedAt desc) [0...10] {
     "documentId": string::split(_id, "workflow-metadata.")[1],
     state,
     _updatedAt
   },
-  "changesRequested": *[_type == "workflow-metadata" && state == "changesRequested"] {
+  "changesRequested": *[_type == "workflow.metadata" && state == "changesRequested"] {
     "documentId": string::split(_id, "workflow-metadata.")[1],
     state,
     _updatedAt
