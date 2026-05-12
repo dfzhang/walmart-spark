@@ -14,7 +14,7 @@ export interface WorkflowMetadata {
   documentId: string;
 }
 
-/** Approval log entry stored on article documents */
+/** Approval log entry stored in separate approval-log.{docId} documents */
 export interface ApprovalLogEntry {
   _key: string;
   stage: string;
@@ -40,7 +40,6 @@ export interface ArticleDocument {
   slug: { current: string };
   excerpt?: string;
   body?: PortableTextBlock[];
-  approvalLog?: ApprovalLogEntry[];
   legalReviewNeeded?: boolean;
 }
 
